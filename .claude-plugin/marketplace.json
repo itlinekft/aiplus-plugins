@@ -1,0 +1,15 @@
+{
+  "name": "aiplus-plugins",
+  "owner": {
+    "name": "AI Plus"
+  },
+  "description": "Az ITLine AI+ termékek Claude-pluginjai. A motorokat a saját telepítőjük telepíti.",
+  "plugins": [
+    {
+      "name": "aiplus",
+      "source": "./plugins/aiplus",
+      "version": "0.4.17",
+      "description": "Az AI+ Meeting Asszisztens skilljei az aiplus motor MCP eszközeire."
+    }
+  ]
+}

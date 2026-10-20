@@ -1,0 +1,8 @@
+{
+  "name": "aiplus",
+  "version": "0.4.17",
+  "description": "AI+ Meeting Asszisztens: az élő meeting asszisztens a Claude Desktopban, a gépre telepített aiplus motorral.",
+  "author": {
+    "name": "AI Plus"
+  }
+}
