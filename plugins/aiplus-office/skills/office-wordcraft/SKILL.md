@@ -63,6 +63,13 @@ Id families: `text.*` (typing, breaks), `para.*` (alignment, spacing, styles, li
 
 ## Traps
 
+- **No Hungarian spell check.** WordCraft 0.10.0 has no Hungarian dictionary: with the default `en-US`
+  (`review.language`) every Hungarian word is flagged, with `hu-HU` nothing is, not even an English typo, and it gives
+  no warning (measured 2026-10-24; upstream #735). Never use `review.issues` on Hungarian text and never say WordCraft
+  checked the spelling. **Proofread Hungarian text yourself** before saving (spelling, ő/ű against ö/ü, compounds, the
+  names and amounts), and tell the user plainly: „A WordCraft nem ellenőrzi a magyar helyesírást; a szöveget én néztem
+  át.” / “WordCraft does not check Hungarian spelling; I proofread the text myself.”
+
 - **The default page is US Letter.** A Hungarian document needs `--cmd 'layout.size={"name":"A4"}'` (a `--file x.md`
   import and a blank document both start as Letter). A4 renders to 596×842 px at `--scale 1`.
 - **One failing `--cmd` aborts the whole run and writes nothing**: a bad id (`unknown command`) or bad JSON exits 1 and

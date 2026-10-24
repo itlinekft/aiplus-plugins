@@ -64,7 +64,8 @@ Id families: `file.*`, `cell.*`/`range.*` (data), `sheet.*`, `home.*` (formats, 
 
 - **Formulas use the English convention, whatever the user's Excel shows**: English function names (`SUM`, not
   `SZUM` → `#NAME?`), a **dot** as decimal separator (`=B2*0.27`; `0,27` is a syntax error) and a **comma** between
-  arguments (`=ROUND(B2*0.27,0)`; `;` is an error). Hungarian CSV files with `;` separators open fine.
+  arguments (`=ROUND(B2*0.27,0)`; `;` is an error). Hungarian CSV files with `;` separators open, but their
+  Hungarian-format amounts and dates stay **text** (next section).
 - **Formula errors print as values with exit 0** (`#NAME?`, `#DIV/0!`): read the result back (`cat`, `eval --json`
   gives `{"error":"…"}`) before trusting a total.
 - **One failing `--cmd` aborts the run, exit 1, nothing written.**
@@ -77,6 +78,31 @@ Id families: `file.*`, `cell.*`/`range.*` (data), `sheet.*`, `home.*` (formats, 
 - 27% VAT on each line and on the total can differ by rounding: decide with the user whether lines are rounded
   (`=ROUND(B2*0.27,0)`) and keep one rule in the whole sheet.
 
+## Hungarian numbers, dates and the letters ő/ű
+
+Measured 2026-10-24 on GridCraft 0.11.1 (the plugin's `docs/MEASURED.md`); upstream knows both (#889; #446, #2241).
+
+- **Write numbers as numbers.** GridCraft reads number text the en-US way: „1 330,50", „1330,50", „1.330,50" stay
+  **text**, and a `SUM` skips them **silently** (45 000 instead of 47 661, no error). Convert every Hungarian amount
+  yourself before writing (`1 330,50 Ft` → `1330.5`), pass it as a JSON number in `range.setValues`, and show it the
+  Hungarian way with a number format: `# ##0 "Ft"` for whole forints, `# ##0.00 "Ft"` with fillér (GridCraft shows
+  the decimals after a point).
+- **Dates as ISO.** `"2026-10-31"` in `range.setValues` becomes a date; `2026.10.31.` and `31.10.2026` stay text. Show
+  it the Hungarian way with `home.numberFormat` `{"code":"yyyy.mm.dd."}`.
+- **A Hungarian CSV never goes straight in** when it holds amounts or dates: `convert hu.csv hu.xlsx` keeps them as
+  text. Read the CSV yourself, convert the values, write them with `range.setValues`.
+- **Gate every workbook:** `aiplus-office verify <file>.xlsx --hu-numbers` fails with the cell list when a
+  Hungarian-looking number or date is text where a formula reads it or its column holds numbers. Then read back every
+  total with `eval '=D4' --json` and compare it with the value you computed yourself.
+- **ő, ű, Ő, Ű are lost in GridCraft's own PDF and print.** Its PDF writes those four letters through a font it does not
+  embed: their text is gone and a viewer draws boxes or nothing („T z gép" for „Tűzőgép"). The XLSX itself is right.
+  When the sheet holds any of them, **make the PDF through WordCraft**: `gridcraft exec convert x.xlsx x.html` (it keeps
+  the number formats, e.g. `12 000 Ft`) → `wordcraft exec run --file x.html … file.exportPdf` (embedded font, the
+  letters kept; a plain table, no chart). Recipe `afa-tabla-pdf`. Gate **every** PDF made from a workbook with
+  `aiplus-office verify x.pdf --hu-glyphs x.xlsx`. If the user needs GridCraft's own PDF or print (for its chart), tell
+  them plainly that ő and ű will be missing from it; for a chart with those letters use DeckCraft's `insert.chart`
+  (`office-data-visual`).
+
 ## MCP route (not registered)
 
 GridCraft's MCP server advertises **no path confinement** (it can read and write any file the user can), so the plugin
@@ -86,14 +112,16 @@ project folder. GUI bridging (`--connect`) is out of scope.
 ## Recipes
 
 ```bash recipe: afa-tabla-pdf
-# Net prices, a 27% VAT column and gross totals with formulas; recalculation checked; A4 PDF.
+# Net prices as numbers, a 27% VAT column and gross totals; forint format; checks; an A4 PDF that keeps ő/ű (via WordCraft).
 aiplus-office gridcraft exec run --quiet \
-  --cmd 'range.setValues={"range":"A1","values":[["Termék","Nettó (Ft)","ÁFA 27% (Ft)","Bruttó (Ft)"],["Toner",12000,"=B2*0.27","=B2+C2"],["Papír",3500,"=B3*0.27","=B3+C3"],["Összesen","=SUM(B2:B3)","=SUM(C2:C3)","=SUM(D2:D3)"]]}' \
-  --cmd 'pageLayout.size={"paper":"A4"}' --out afa.xlsx
-aiplus-office gridcraft exec cat afa.xlsx --formulas
+  --cmd 'range.setValues={"range":"A1","values":[["Termék","Nettó (Ft)","ÁFA 27% (Ft)","Bruttó (Ft)"],["Toner",12000,"=B2*0.27","=B2+C2"],["Tűzőgép",3500,"=B3*0.27","=B3+C3"],["Összesen","=SUM(B2:B3)","=SUM(C2:C3)","=SUM(D2:D3)"]]}' \
+  --cmd 'home.numberFormat={"range":"B2:D4","code":"# ##0 \"Ft\""}' --cmd 'pageLayout.size={"paper":"A4"}' --out afa.xlsx
+aiplus-office verify afa.xlsx --hu-numbers
 aiplus-office gridcraft exec check afa.xlsx
-aiplus-office gridcraft exec run --in afa.xlsx --out afa.pdf
-aiplus-office verify afa.pdf --pages 1 --text-contains "Összesen" --text-contains "19685"
+test "$(aiplus-office gridcraft exec eval '=D4' --in afa.xlsx --json)" = "19685.0"
+aiplus-office gridcraft exec convert afa.xlsx afa.html
+aiplus-office wordcraft exec run --file afa.html --cmd 'layout.size={"name":"A4"}' --cmd "file.exportPdf={\"path\":\"$PWD/afa.pdf\"}" --save afa-tabla.docx
+aiplus-office verify afa.pdf --pages 1 --hu-glyphs afa.xlsx --text-contains "Összesen" --text-contains "19 685 Ft"
 ```
 
 ```bash recipe: eval-and-csv
@@ -116,12 +144,13 @@ aiplus-office verify modositott.pdf --pages 1 --text-contains "25000"
 ```
 
 ```bash recipe: jelenleti-csv
-# A semicolon CSV (as Hungarian Excel writes it) -> xlsx with a worked-hours formula -> pdf.
+# A semicolon CSV (as Hungarian Excel writes it; ISO dates, no Hungarian amounts) -> xlsx with a worked-hours formula -> pdf.
 printf 'Név;Dátum;Érkezés;Távozás\nMinta Péter;2026-10-26;08:00;16:30\n' > jelenleti.csv
 aiplus-office gridcraft exec convert jelenleti.csv jelenleti.xlsx
 aiplus-office gridcraft exec run --in jelenleti.xlsx --quiet \
   --cmd 'cell.set={"cell":"E1","input":"Óra"}' --cmd 'cell.set={"cell":"E2","input":"=(D2-C2)*24"}' \
   --cmd 'home.autofitColumnWidth={"cols":"A:E"}' --print A1:E2 --out jelenleti.xlsx
+aiplus-office verify jelenleti.xlsx --hu-numbers
 aiplus-office gridcraft exec run --in jelenleti.xlsx --out jelenleti.pdf
 aiplus-office verify jelenleti.pdf --pages 1 --text-contains "Minta Péter" --text-contains "8.5"
 ```

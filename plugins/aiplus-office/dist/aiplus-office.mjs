@@ -110,17 +110,17 @@ var require_visit = __commonJS({
     visit.BREAK = BREAK;
     visit.SKIP = SKIP;
     visit.REMOVE = REMOVE;
-    function visit_(key, node, visitor, path7) {
-      const ctrl = callVisitor(key, node, visitor, path7);
+    function visit_(key, node, visitor, path8) {
+      const ctrl = callVisitor(key, node, visitor, path8);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key, path7, ctrl);
-        return visit_(key, ctrl, visitor, path7);
+        replaceNode(key, path8, ctrl);
+        return visit_(key, ctrl, visitor, path8);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path7 = Object.freeze(path7.concat(node));
+          path8 = Object.freeze(path8.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = visit_(i, node.items[i], visitor, path7);
+            const ci = visit_(i, node.items[i], visitor, path8);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -131,13 +131,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path7 = Object.freeze(path7.concat(node));
-          const ck = visit_("key", node.key, visitor, path7);
+          path8 = Object.freeze(path8.concat(node));
+          const ck = visit_("key", node.key, visitor, path8);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = visit_("value", node.value, visitor, path7);
+          const cv = visit_("value", node.value, visitor, path8);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -158,17 +158,17 @@ var require_visit = __commonJS({
     visitAsync.BREAK = BREAK;
     visitAsync.SKIP = SKIP;
     visitAsync.REMOVE = REMOVE;
-    async function visitAsync_(key, node, visitor, path7) {
-      const ctrl = await callVisitor(key, node, visitor, path7);
+    async function visitAsync_(key, node, visitor, path8) {
+      const ctrl = await callVisitor(key, node, visitor, path8);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key, path7, ctrl);
-        return visitAsync_(key, ctrl, visitor, path7);
+        replaceNode(key, path8, ctrl);
+        return visitAsync_(key, ctrl, visitor, path8);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path7 = Object.freeze(path7.concat(node));
+          path8 = Object.freeze(path8.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = await visitAsync_(i, node.items[i], visitor, path7);
+            const ci = await visitAsync_(i, node.items[i], visitor, path8);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -179,13 +179,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path7 = Object.freeze(path7.concat(node));
-          const ck = await visitAsync_("key", node.key, visitor, path7);
+          path8 = Object.freeze(path8.concat(node));
+          const ck = await visitAsync_("key", node.key, visitor, path8);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = await visitAsync_("value", node.value, visitor, path7);
+          const cv = await visitAsync_("value", node.value, visitor, path8);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -212,23 +212,23 @@ var require_visit = __commonJS({
       }
       return visitor;
     }
-    function callVisitor(key, node, visitor, path7) {
+    function callVisitor(key, node, visitor, path8) {
       if (typeof visitor === "function")
-        return visitor(key, node, path7);
+        return visitor(key, node, path8);
       if (identity.isMap(node))
-        return visitor.Map?.(key, node, path7);
+        return visitor.Map?.(key, node, path8);
       if (identity.isSeq(node))
-        return visitor.Seq?.(key, node, path7);
+        return visitor.Seq?.(key, node, path8);
       if (identity.isPair(node))
-        return visitor.Pair?.(key, node, path7);
+        return visitor.Pair?.(key, node, path8);
       if (identity.isScalar(node))
-        return visitor.Scalar?.(key, node, path7);
+        return visitor.Scalar?.(key, node, path8);
       if (identity.isAlias(node))
-        return visitor.Alias?.(key, node, path7);
+        return visitor.Alias?.(key, node, path8);
       return void 0;
     }
-    function replaceNode(key, path7, node) {
-      const parent = path7[path7.length - 1];
+    function replaceNode(key, path8, node) {
+      const parent = path8[path8.length - 1];
       if (identity.isCollection(parent)) {
         parent.items[key] = node;
       } else if (identity.isPair(parent)) {
@@ -840,10 +840,10 @@ var require_Collection = __commonJS({
     var createNode = require_createNode();
     var identity = require_identity();
     var Node = require_Node();
-    function collectionFromPath(schema, path7, value) {
+    function collectionFromPath(schema, path8, value) {
       let v = value;
-      for (let i = path7.length - 1; i >= 0; --i) {
-        const k = path7[i];
+      for (let i = path8.length - 1; i >= 0; --i) {
+        const k = path8[i];
         if (typeof k === "number" && Number.isInteger(k) && k >= 0) {
           const a = [];
           a[k] = v;
@@ -862,7 +862,7 @@ var require_Collection = __commonJS({
         sourceObjects: /* @__PURE__ */ new Map()
       });
     }
-    var isEmptyPath = (path7) => path7 == null || typeof path7 === "object" && !!path7[Symbol.iterator]().next().done;
+    var isEmptyPath = (path8) => path8 == null || typeof path8 === "object" && !!path8[Symbol.iterator]().next().done;
     var Collection = class extends Node.NodeBase {
       constructor(type, schema) {
         super(type);
@@ -892,11 +892,11 @@ var require_Collection = __commonJS({
        * be a Pair instance or a `{ key, value }` object, which may not have a key
        * that already exists in the map.
        */
-      addIn(path7, value) {
-        if (isEmptyPath(path7))
+      addIn(path8, value) {
+        if (isEmptyPath(path8))
           this.add(value);
         else {
-          const [key, ...rest] = path7;
+          const [key, ...rest] = path8;
           const node = this.get(key, true);
           if (identity.isCollection(node))
             node.addIn(rest, value);
@@ -910,8 +910,8 @@ var require_Collection = __commonJS({
        * Removes a value from the collection.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path7) {
-        const [key, ...rest] = path7;
+      deleteIn(path8) {
+        const [key, ...rest] = path8;
         if (rest.length === 0)
           return this.delete(key);
         const node = this.get(key, true);
@@ -925,8 +925,8 @@ var require_Collection = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path7, keepScalar) {
-        const [key, ...rest] = path7;
+      getIn(path8, keepScalar) {
+        const [key, ...rest] = path8;
         const node = this.get(key, true);
         if (rest.length === 0)
           return !keepScalar && identity.isScalar(node) ? node.value : node;
@@ -944,8 +944,8 @@ var require_Collection = __commonJS({
       /**
        * Checks if the collection includes a value with the key `key`.
        */
-      hasIn(path7) {
-        const [key, ...rest] = path7;
+      hasIn(path8) {
+        const [key, ...rest] = path8;
         if (rest.length === 0)
           return this.has(key);
         const node = this.get(key, true);
@@ -955,8 +955,8 @@ var require_Collection = __commonJS({
        * Sets a value in this collection. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path7, value) {
-        const [key, ...rest] = path7;
+      setIn(path8, value) {
+        const [key, ...rest] = path8;
         if (rest.length === 0) {
           this.set(key, value);
         } else {
@@ -3471,9 +3471,9 @@ var require_Document = __commonJS({
           this.contents.add(value);
       }
       /** Adds a value to the document. */
-      addIn(path7, value) {
+      addIn(path8, value) {
         if (assertCollection(this.contents))
-          this.contents.addIn(path7, value);
+          this.contents.addIn(path8, value);
       }
       /**
        * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
@@ -3548,14 +3548,14 @@ var require_Document = __commonJS({
        * Removes a value from the document.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path7) {
-        if (Collection.isEmptyPath(path7)) {
+      deleteIn(path8) {
+        if (Collection.isEmptyPath(path8)) {
           if (this.contents == null)
             return false;
           this.contents = null;
           return true;
         }
-        return assertCollection(this.contents) ? this.contents.deleteIn(path7) : false;
+        return assertCollection(this.contents) ? this.contents.deleteIn(path8) : false;
       }
       /**
        * Returns item at `key`, or `undefined` if not found. By default unwraps
@@ -3570,10 +3570,10 @@ var require_Document = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path7, keepScalar) {
-        if (Collection.isEmptyPath(path7))
+      getIn(path8, keepScalar) {
+        if (Collection.isEmptyPath(path8))
           return !keepScalar && identity.isScalar(this.contents) ? this.contents.value : this.contents;
-        return identity.isCollection(this.contents) ? this.contents.getIn(path7, keepScalar) : void 0;
+        return identity.isCollection(this.contents) ? this.contents.getIn(path8, keepScalar) : void 0;
       }
       /**
        * Checks if the document includes a value with the key `key`.
@@ -3584,10 +3584,10 @@ var require_Document = __commonJS({
       /**
        * Checks if the document includes a value at `path`.
        */
-      hasIn(path7) {
-        if (Collection.isEmptyPath(path7))
+      hasIn(path8) {
+        if (Collection.isEmptyPath(path8))
           return this.contents !== void 0;
-        return identity.isCollection(this.contents) ? this.contents.hasIn(path7) : false;
+        return identity.isCollection(this.contents) ? this.contents.hasIn(path8) : false;
       }
       /**
        * Sets a value in this document. For `!!set`, `value` needs to be a
@@ -3604,13 +3604,13 @@ var require_Document = __commonJS({
        * Sets a value in this document. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path7, value) {
-        if (Collection.isEmptyPath(path7)) {
+      setIn(path8, value) {
+        if (Collection.isEmptyPath(path8)) {
           this.contents = value;
         } else if (this.contents == null) {
-          this.contents = Collection.collectionFromPath(this.schema, Array.from(path7), value);
+          this.contents = Collection.collectionFromPath(this.schema, Array.from(path8), value);
         } else if (assertCollection(this.contents)) {
-          this.contents.setIn(path7, value);
+          this.contents.setIn(path8, value);
         }
       }
       /**
@@ -5571,9 +5571,9 @@ var require_cst_visit = __commonJS({
     visit.BREAK = BREAK;
     visit.SKIP = SKIP;
     visit.REMOVE = REMOVE;
-    visit.itemAtPath = (cst, path7) => {
+    visit.itemAtPath = (cst, path8) => {
       let item = cst;
-      for (const [field, index] of path7) {
+      for (const [field, index] of path8) {
         const tok = item?.[field];
         if (tok && "items" in tok) {
           item = tok.items[index];
@@ -5582,23 +5582,23 @@ var require_cst_visit = __commonJS({
       }
       return item;
     };
-    visit.parentCollection = (cst, path7) => {
-      const parent = visit.itemAtPath(cst, path7.slice(0, -1));
-      const field = path7[path7.length - 1][0];
+    visit.parentCollection = (cst, path8) => {
+      const parent = visit.itemAtPath(cst, path8.slice(0, -1));
+      const field = path8[path8.length - 1][0];
       const coll = parent?.[field];
       if (coll && "items" in coll)
         return coll;
       throw new Error("Parent collection not found");
     };
-    function _visit(path7, item, visitor) {
-      let ctrl = visitor(item, path7);
+    function _visit(path8, item, visitor) {
+      let ctrl = visitor(item, path8);
       if (typeof ctrl === "symbol")
         return ctrl;
       for (const field of ["key", "value"]) {
         const token = item[field];
         if (token && "items" in token) {
           for (let i = 0; i < token.items.length; ++i) {
-            const ci = _visit(Object.freeze(path7.concat([[field, i]])), token.items[i], visitor);
+            const ci = _visit(Object.freeze(path8.concat([[field, i]])), token.items[i], visitor);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -5609,10 +5609,10 @@ var require_cst_visit = __commonJS({
             }
           }
           if (typeof ctrl === "function" && field === "key")
-            ctrl = ctrl(item, path7);
+            ctrl = ctrl(item, path8);
         }
       }
-      return typeof ctrl === "function" ? ctrl(item, path7) : ctrl;
+      return typeof ctrl === "function" ? ctrl(item, path8) : ctrl;
     }
     exports.visit = visit;
   }
@@ -6914,14 +6914,14 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs7 = this.flowScalar(this.type);
+              const fs8 = this.flowScalar(this.type);
               if (atNextItem || it.value) {
-                map.items.push({ start, key: fs7, sep: [] });
+                map.items.push({ start, key: fs8, sep: [] });
                 this.onKeyLine = true;
               } else if (it.sep) {
-                this.stack.push(fs7);
+                this.stack.push(fs8);
               } else {
-                Object.assign(it, { key: fs7, sep: [] });
+                Object.assign(it, { key: fs8, sep: [] });
                 this.onKeyLine = true;
               }
               return;
@@ -7049,13 +7049,13 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs7 = this.flowScalar(this.type);
+              const fs8 = this.flowScalar(this.type);
               if (!it || it.value)
-                fc.items.push({ start: [], key: fs7, sep: [] });
+                fc.items.push({ start: [], key: fs8, sep: [] });
               else if (it.sep)
-                this.stack.push(fs7);
+                this.stack.push(fs8);
               else
-                Object.assign(it, { key: fs7, sep: [] });
+                Object.assign(it, { key: fs8, sep: [] });
               return;
             }
             case "flow-map-end":
@@ -7364,7 +7364,7 @@ var require_dist = __commonJS({
 });
 
 // src/bin/aiplus-office.ts
-import * as fs6 from "node:fs";
+import * as fs7 from "node:fs";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 
 // src/exec.ts
@@ -9566,20 +9566,20 @@ function scanParagraph(whole, ctx) {
 }
 function applyEdits(nodes, edits) {
   const starts = nodes.map((_, i) => nodes.slice(0, i).reduce((n, t) => n + t.length, 0));
-  const texts = [...nodes];
+  const texts2 = [...nodes];
   const touched = /* @__PURE__ */ new Set();
   for (const ed of [...edits].sort((a, b) => b.start - a.start)) {
     let first = true;
-    for (let i = 0; i < texts.length; i++) {
+    for (let i = 0; i < texts2.length; i++) {
       const lo = Math.max(ed.start, starts[i]);
       const hi = Math.min(ed.end, starts[i] + nodes[i].length);
       if (hi <= lo) continue;
-      texts[i] = texts[i].slice(0, lo - starts[i]) + (first ? ed.text : "") + texts[i].slice(hi - starts[i]);
+      texts2[i] = texts2[i].slice(0, lo - starts[i]) + (first ? ed.text : "") + texts2[i].slice(hi - starts[i]);
       touched.add(i);
       first = false;
     }
   }
-  return texts.map((t, i) => touched.has(i) ? t : null);
+  return texts2.map((t, i) => touched.has(i) ? t : null);
 }
 function fillParagraph(nodes, ctx) {
   const whole = nodes.join("");
@@ -9946,8 +9946,174 @@ function statusRoot(deps) {
 }
 
 // src/verify.ts
+import * as fs6 from "node:fs";
+import * as path7 from "node:path";
+
+// src/hu-guards.ts
 import * as fs5 from "node:fs";
 import * as path6 from "node:path";
+var HU_LONG = /[őűŐŰ]/;
+var MONTHS2 = "janu\xE1r|febru\xE1r|m\xE1rcius|\xE1prilis|m\xE1jus|j\xFAnius|j\xFAlius|augusztus|szeptember|okt\xF3ber|november|december";
+var SIGN = "[-+\u2212]?";
+var SPACE = "[ \xA0\u202F]";
+var NUMBER_PATTERNS = [
+  new RegExp(`^${SIGN}\\d{1,3}(?:${SPACE}\\d{3})+(?:,\\d+)?$`),
+  // 1 330,50 · 12 000
+  new RegExp(`^${SIGN}\\d+,\\d+$`),
+  // 1330,50
+  new RegExp(`^${SIGN}\\d{1,3}(?:\\.\\d{3})+,\\d+$`),
+  // 1.330,50
+  new RegExp(`^${SIGN}\\d{1,3}(?:\\.\\d{3}){2,}$`),
+  // 1.330.000
+  new RegExp(`^${SIGN}\\d+,\\d+${SPACE}?%$`)
+  // 27,5 %
+];
+var DATE_PATTERNS = [
+  /^\d{4}\.\s?\d{1,2}\.\s?\d{1,2}\.?$/,
+  // 2026.10.31. · 2026. 10. 31.
+  /^\d{1,2}\.\s?\d{1,2}\.\s?\d{4}\.?$/,
+  // 31.10.2026
+  new RegExp(`^\\d{4}\\.\\s?(?:${MONTHS2})\\s?\\d{1,2}\\.?$`, "i")
+  // 2026. október 31.
+];
+var CURRENCY = new RegExp(`${SPACE}?(?:Ft|HUF|forint)\\.?$`, "i");
+function huKind(raw) {
+  const t = raw.trim();
+  if (t === "") return null;
+  if (DATE_PATTERNS.some((p) => p.test(t))) return "date";
+  const hadCurrency = CURRENCY.test(t);
+  const s = t.replace(CURRENCY, "").trim();
+  if (NUMBER_PATTERNS.some((p) => p.test(s))) return "number";
+  if (new RegExp(`^${SIGN}\\d+(?:\\.\\d+)?$`).test(s)) return hadCurrency ? "number" : "digits";
+  return null;
+}
+var ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
+function decode(s) {
+  return s.replace(
+    /&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi,
+    (_, e) => e[0] === "#" ? String.fromCodePoint(e[1] === "x" || e[1] === "X" ? Number.parseInt(e.slice(2), 16) : Number(e.slice(1))) : ENTITIES[e.toLowerCase()]
+  );
+}
+function texts(xml) {
+  return [...xml.matchAll(/<(?:\w+:)?t(?:\s[^>]*)?>([^<]*)<\/(?:\w+:)?t>/g)].map((m) => decode(m[1]));
+}
+function unzip(buf) {
+  if (buf.length < 4 || buf[0] !== 80 || buf[1] !== 75) return void 0;
+  try {
+    return unzipSync(buf);
+  } catch {
+    return void 0;
+  }
+}
+var utf8 = (b) => b ? new TextDecoder().decode(b) : "";
+function sourceText(file, buf = fs5.readFileSync(file)) {
+  const zip = unzip(buf);
+  if (zip) {
+    const parts = Object.keys(zip).filter((n) => n.endsWith(".xml") && /^(xl\/(sharedStrings|worksheets\/|charts\/)|word\/|ppt\/(slides|charts|notesSlides)\/)/.test(n)).sort();
+    return parts.map((n) => texts(utf8(zip[n])).join(" ")).join("\n");
+  }
+  const raw = utf8(buf);
+  return /\.html?$/i.test(path6.extname(file)) ? decode(raw.replace(/<[^>]*>/g, " ")) : raw;
+}
+function huWords(text) {
+  const seen = /* @__PURE__ */ new Set();
+  for (const w of text.normalize("NFC").split(/[^\p{L}\p{N}]+/u)) if (w && HU_LONG.test(w)) seen.add(w);
+  return [...seen];
+}
+function huWordsFrom(file) {
+  return huWords(sourceText(file));
+}
+function missingWords(words, pdfText) {
+  const have = new Set(pdfText.normalize("NFC").split(/[^\p{L}\p{N}]+/u));
+  return words.filter((w) => !have.has(w));
+}
+var colNum = (letters) => [...letters.toUpperCase()].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0);
+function formulaRanges(formula, ownSheet) {
+  const f = formula.replace(/"(?:[^"]|"")*"/g, '""');
+  const out = [];
+  const sheetPart = "(?:(?:'((?:[^']|'')+)'|([A-Za-z_\\u00C0-\\u024F][\\w.\\u00C0-\\u024F]*))!)?";
+  const cellRe = new RegExp(`(?<![\\w.$])${sheetPart}\\$?([A-Z]{1,3})\\$?(\\d+)(?::\\$?([A-Z]{1,3})\\$?(\\d+))?(?![\\w(])`, "g");
+  for (const m of f.matchAll(cellRe)) {
+    const sheet = (m[1]?.replace(/''/g, "'") ?? m[2]) || ownSheet;
+    const [c1, r1] = [colNum(m[3]), Number(m[4])];
+    const [c2, r2] = m[5] ? [colNum(m[5]), Number(m[6])] : [c1, r1];
+    out.push({ sheet, c1: Math.min(c1, c2), r1: Math.min(r1, r2), c2: Math.max(c1, c2), r2: Math.max(r1, r2) });
+  }
+  const colRe = new RegExp(`(?<![\\w.$])${sheetPart}\\$?([A-Z]{1,3}):\\$?([A-Z]{1,3})(?![\\w(])`, "g");
+  for (const m of f.matchAll(colRe)) {
+    const sheet = (m[1]?.replace(/''/g, "'") ?? m[2]) || ownSheet;
+    const [a, b] = [colNum(m[3]), colNum(m[4])];
+    out.push({ sheet, c1: Math.min(a, b), r1: 1, c2: Math.max(a, b), r2: 1048576 });
+  }
+  return out;
+}
+function sheetParts(zip) {
+  const wb = utf8(zip["xl/workbook.xml"]);
+  const rels = utf8(zip["xl/_rels/workbook.xml.rels"]);
+  const target = /* @__PURE__ */ new Map();
+  for (const m of rels.matchAll(/<Relationship\b[^>]*>/g)) {
+    const id = /\bId="([^"]+)"/.exec(m[0])?.[1];
+    const t = /\bTarget="([^"]+)"/.exec(m[0])?.[1];
+    if (id && t) target.set(id, t.startsWith("/") ? t.slice(1) : path6.posix.join("xl", t));
+  }
+  const out = [];
+  for (const m of wb.matchAll(/<sheet\b[^>]*>/g)) {
+    const name = decode(/\bname="([^"]*)"/.exec(m[0])?.[1] ?? "");
+    const rid = /\br:id="([^"]+)"/.exec(m[0])?.[1] ?? /\bid="([^"]+)"/.exec(m[0])?.[1];
+    const part = rid ? target.get(rid) : void 0;
+    if (part && zip[part]) out.push({ name, part });
+  }
+  return out;
+}
+function scanHuNumbers(buf) {
+  const zip = unzip(buf);
+  if (!zip || !zip["xl/workbook.xml"]) throw new Error("not an XLSX workbook");
+  const sst = [...utf8(zip["xl/sharedStrings.xml"]).matchAll(/<si>([\s\S]*?)<\/si>/g)].map((m) => texts(m[1]).join(""));
+  const sheets = sheetParts(zip);
+  const cells = /* @__PURE__ */ new Map();
+  const ranges = [];
+  for (const { name, part } of sheets) {
+    const list = [];
+    for (const m of utf8(zip[part]).matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
+      const attrs = m[1];
+      const body = m[2] ?? "";
+      const ref = /\br="([A-Z]{1,3})(\d+)"/.exec(attrs);
+      if (!ref) continue;
+      const t = /\bt="([^"]+)"/.exec(attrs)?.[1] ?? "n";
+      const f = /<f\b[^>]*>([^<]*)<\/f>/.exec(body)?.[1];
+      if (f) ranges.push(...formulaRanges(decode(f), name));
+      const v = /<v>([^<]*)<\/v>/.exec(body)?.[1];
+      const cell = { col: colNum(ref[1]), row: Number(ref[2]), ref: `${ref[1]}${ref[2]}`, type: "other" };
+      if (t === "s" && v !== void 0) Object.assign(cell, { type: "text", text: sst[Number(v)] ?? "" });
+      else if (t === "inlineStr") Object.assign(cell, { type: "text", text: texts(body).join("") });
+      else if (t === "n" && (v !== void 0 || f)) cell.type = "number";
+      list.push(cell);
+    }
+    cells.set(name, list);
+  }
+  const out = [];
+  for (const [sheet, list] of cells) {
+    const numberCols = new Set(list.filter((c) => c.type === "number").map((c) => c.col));
+    const kinds = list.map((c) => c.type === "text" ? huKind(c.text ?? "") : null);
+    const perCol = /* @__PURE__ */ new Map();
+    list.forEach((c, i) => {
+      if (kinds[i] === "number" || kinds[i] === "date") perCol.set(c.col, (perCol.get(c.col) ?? 0) + 1);
+    });
+    list.forEach((c, i) => {
+      const kind = kinds[i];
+      if (!kind) return;
+      const read = ranges.some((r) => r.sheet === sheet && c.col >= r.c1 && c.col <= r.c2 && c.row >= r.r1 && c.row <= r.r2);
+      let reason;
+      if (read) reason = "formula range";
+      else if (kind !== "digits" && numberCols.has(c.col)) reason = "number column";
+      else if (kind !== "digits" && (perCol.get(c.col) ?? 0) >= 2) reason = "column of such cells";
+      if (reason) out.push({ sheet, cell: c.ref, text: c.text ?? "", kind, reason });
+    });
+  }
+  return out;
+}
+
+// src/verify.ts
 var VERIFY_USAGE = `usage: aiplus-office verify <file> <assertion\u2026> [--json]
 
 media:     --duration <s>[\xB1tol]   (default tolerance 0.05 s)   --has-video  --has-audio  --no-audio
@@ -9958,6 +10124,9 @@ media:     --duration <s>[\xB1tol]   (default tolerance 0.05 s)   --has-video  -
 visual:    --frame-diff <t>:<ref>[@<rt>]<op><pct>   op > (content must differ) or < (must match);
            pct = share of pixels whose luma differs by more than 40/255
 documents: --pages <n>  --text-contains <string>   (PDF, via pdfcraft-cli)
+           --hu-glyphs <source>   every word with \u0151/\u0171/\u0150/\u0170 in <source> (xlsx/docx/pptx/txt/md/csv/html) is in the PDF's text
+           --hu-numbers           (XLSX) no Hungarian-format number or date (\u201E1 330,50", \u201E2026.10.31.") stored as text
+                                  where a formula reads it or its column holds numbers
 
 exit: 0 all pass \xB7 1 failed/missing file \xB7 2 usage \xB7 3 probe tool missing (ffprobe, ffmpeg, pdfcraft)`;
 var PROBE_TIMEOUT_MS = 6e4;
@@ -9969,11 +10138,11 @@ function defaultVerifyDeps() {
     stdout: (t) => process.stdout.write(t),
     stderr: (t) => process.stderr.write(t),
     provisionPdfcraft: () => provision("pdfcraft"),
-    exists: (f) => fs5.existsSync(f)
+    exists: (f) => fs6.existsSync(f)
   };
 }
-var FLAG_ONLY = /* @__PURE__ */ new Set(["has-video", "has-audio", "no-audio", "alpha"]);
-var WITH_VALUE = /* @__PURE__ */ new Set(["duration", "size", "fps", "codec", "loudness", "max-peak", "silent-below", "frame-diff", "pages", "text-contains"]);
+var FLAG_ONLY = /* @__PURE__ */ new Set(["has-video", "has-audio", "no-audio", "alpha", "hu-numbers"]);
+var WITH_VALUE = /* @__PURE__ */ new Set(["duration", "size", "fps", "codec", "loudness", "max-peak", "silent-below", "frame-diff", "pages", "text-contains", "hu-glyphs"]);
 var UsageError = class extends Error {
 };
 var NUM = "-?\\d+(?:\\.\\d+)?";
@@ -10018,6 +10187,9 @@ function parseAssertion(flag, raw) {
     case "text-contains":
       if (v === "") throw new UsageError("--text-contains needs a non-empty string");
       return { kind: "text-contains", value: v };
+    case "hu-glyphs":
+      if (v === "") throw new UsageError("--hu-glyphs needs the source file (the workbook, document or text the PDF was made from)");
+      return { kind: "hu-glyphs", source: v };
     case "frame-diff": {
       const m = /^(\d+(?:\.\d+)?):(.+?)(?:@(\d+(?:\.\d+)?))?([<>])(\d+(?:\.\d+)?)$/.exec(v);
       if (!m) throw new UsageError(`--frame-diff needs <t>:<ref>[@<rt>]<op><pct> (op < or >), got "${v}"`);
@@ -10057,8 +10229,11 @@ function parseVerifyArgs(argv) {
   }
   if (file === void 0) throw new UsageError("no file given");
   if (assertions.length === 0) throw new UsageError("no assertion given");
-  for (const a of assertions) if (a.kind === "frame-diff") a.ref = path6.resolve(a.ref);
-  return { file: path6.resolve(file), assertions, json };
+  for (const a of assertions) {
+    if (a.kind === "frame-diff") a.ref = path7.resolve(a.ref);
+    if (a.kind === "hu-glyphs") a.source = path7.resolve(a.source);
+  }
+  return { file: path7.resolve(file), assertions, json };
 }
 var ToolMissing = class extends Error {
   tool;
@@ -10073,7 +10248,7 @@ var tolText = (raw) => raw.replace("+/-", "\xB1").replace("+-", "\xB1");
 var ProbeTimeout = class extends Error {
 };
 async function run(deps, tool, args, opts) {
-  const bare = !path6.isAbsolute(tool);
+  const bare = !path7.isAbsolute(tool);
   try {
     return await deps.exec(bare ? exe(tool) : tool, args, opts);
   } catch (e) {
@@ -10197,6 +10372,35 @@ async function evaluate(a, file, deps, prober, pdfBin) {
       const found = text.includes(a.value);
       return result("--text-contains", JSON.stringify(a.value), found ? "found" : "not found", found);
     }
+    case "hu-glyphs": {
+      const words = huWordsFrom(a.source);
+      const expected = `every word with \u0151/\u0171 from ${path7.basename(a.source)} in the PDF text`;
+      if (words.length === 0) return result("--hu-glyphs", expected, "the source holds no word with \u0151/\u0171", true);
+      const bin = await pdfBin();
+      const missing = missingWords(words, (await run(deps, bin, ["text", file])).stdout.toString());
+      const list = (w) => `${w.slice(0, 10).join(", ")}${w.length > 10 ? ` (+${w.length - 10} more)` : ""}`;
+      return result(
+        "--hu-glyphs",
+        `${expected} (${words.length} word(s))`,
+        missing.length ? `missing ${missing.length}: ${list(missing)} (the letters were lost in the PDF; GridCraft's export does this)` : `all ${words.length} found`,
+        missing.length === 0
+      );
+    }
+    case "hu-numbers": {
+      let cells;
+      try {
+        cells = scanHuNumbers(fs6.readFileSync(file));
+      } catch {
+        return result("--hu-numbers", "an XLSX workbook", "not an XLSX workbook", false);
+      }
+      const shown = cells.slice(0, 12).map((c) => `${c.sheet}!${c.cell} ${JSON.stringify(c.text)} (${c.reason})`);
+      return result(
+        "--hu-numbers",
+        "numbers and dates stored as numbers",
+        cells.length ? `${cells.length} text cell(s) that look like Hungarian numbers/dates: ${shown.join("; ")}${cells.length > 12 ? `; +${cells.length - 12} more` : ""}` : "none stored as text",
+        cells.length === 0
+      );
+    }
   }
 }
 function makePdfBin(deps) {
@@ -10250,6 +10454,10 @@ ${VERIFY_USAGE}
       report.error = `--frame-diff reference not found or unreadable: ${a.ref}`;
       return finish(1);
     }
+    if (a.kind === "hu-glyphs" && !deps.exists(a.source)) {
+      report.error = `--hu-glyphs source not found or unreadable: ${a.source}`;
+      return finish(1);
+    }
   }
   const prober = makeProber(deps, file);
   const pdfBin = makePdfBin(deps);
@@ -10269,7 +10477,7 @@ ${VERIFY_USAGE}
 }
 
 // src/bin/aiplus-office.ts
-var VERSION = "0.1.1";
+var VERSION = "0.1.2";
 var NODE_MIN_MAJOR = 20;
 function nodeLine(version) {
   const major = Number(/^v?(\d+)/.exec(version)?.[1]);
@@ -10460,7 +10668,7 @@ async function main(argv, partial = {}) {
 function isEntry() {
   try {
     const entry = process.argv[1];
-    return !!entry && fs6.realpathSync(entry) === fs6.realpathSync(fileURLToPath3(import.meta.url));
+    return !!entry && fs7.realpathSync(entry) === fs7.realpathSync(fileURLToPath3(import.meta.url));
   } catch {
     return false;
   }

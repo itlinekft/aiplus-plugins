@@ -144,7 +144,25 @@ This is what the plugin is built for; what has actually been tried is the next b
 > - **Cowork: not tested yet.** The test is under way. If something does not start there, tell us what you see.
 > - Claude Code on Windows and macOS: not tested yet.
 
-## 7. The desktop (window) apps (optional)
+## 7. Good to know: three Hungarian limits
+
+Say this once, after the two blocks above (measured 2026-10-24; the skills route around each one and check it):
+
+> **HU:** **Jó tudni:**
+> - A GridCraft saját PDF-je és nyomtatása elhagyja az ő és ű betűt, ezért az ilyen táblázat PDF-jét a modul a
+>   WordCraft-tal készíti, és ellenőrzi.
+> - A szövegként beírt magyar számot („1 330,50”) a GridCraft nem adja össze, ezért a modul valódi számot ír be, és
+>   ellenőrzi az összegeket.
+> - A WordCraft nem ellenőrzi a magyar helyesírást: a szöveget a Claude nézi át, és ezt meg is mondja.
+>
+> **EN:** **Good to know:**
+> - GridCraft's own PDF and printout drop the letters ő and ű, so the module makes the PDF of such a sheet with
+>   WordCraft, and checks it.
+> - GridCraft does not add up a Hungarian number typed as text („1 330,50”), so the module writes real numbers and
+>   checks the totals.
+> - WordCraft does not check Hungarian spelling: Claude proofreads the text itself and says so.
+
+## 8. The desktop (window) apps (optional)
 
 The plugin installs **only the command-line tools** of the four apps; it does not install their desktop (window) apps.
 If the user wants to open a made file in a window, or asks for the GridCraft program itself, point to the official
@@ -181,7 +199,7 @@ download page (checked 2026-10-24, see the repository's `docs/MEASURED.md`):
 > The programs' web page is `https://getartcraft.com/apps/<program>`; the newest version is on the GitHub page. These are
 > early versions too: always keep a copy of an important file.
 
-## 8. Close
+## 9. Close
 
 End with one concrete next step in the user's language, e.g. HU „Próbáld ki: »Készíts árlistát táblázatban három
 termékkel, 27% ÁFÁ-val«” (Cowork / Claude Code) or „»Írj árajánlatot Word-formátumban a Minta Kft. részére«” (Chat is
