@@ -1,6 +1,6 @@
 ---
 name: office-router
-description: Router for office work with the free, open-source ArtCraft apps — WordCraft (DOCX), GridCraft (XLSX), DeckCraft (PPTX), PdfCraft (PDF) — driven headless through the aiplus-office command, for Word, Excel, PowerPoint and PDF files. Use to pick the app and run the plan-discover-execute-save-verify loop for "make a Word document", "build a spreadsheet", "make a presentation", "merge these PDFs", "edit this Excel file", and for Hungarian office jobs - árajánlat, díjbekérő, árlista, szerződés, jelenléti ív, prezentáció, táblázat.
+description: Router for office work with the free, open-source ArtCraft apps — WordCraft (DOCX), GridCraft (XLSX), DeckCraft (PPTX), PdfCraft (PDF) — driven headless through the aiplus-office command, for Word, Excel, PowerPoint and PDF files. Use to pick the app and run the plan-discover-execute-save-verify loop for "make a Word document", "build a spreadsheet", "make a presentation", "merge these PDFs", "edit this Excel file", and for Hungarian office jobs - árajánlat, díjbekérő, árlista, szerződés, jelenléti ív, prezentáció, táblázat, készíts Word-dokumentumot, fűzd össze a PDF-eket. First run or setup questions go to office-start.
 ---
 
 # office-router — pick the office app, drive it headless, verify the result
@@ -10,6 +10,14 @@ self-describing command registry. The `aiplus-office` command provisions those C
 official `github.com/storytold/<app>` releases, SHA-256-checked against the release's `SHA256SUMS.txt`, cached per user,
 nothing installed system-wide) and gives one command surface for all four. **This skill chooses the app and owns the
 loop; each app has its own skill for its dialect, traps and recipes — read it before running anything in that app.**
+
+## First run → `office-start`
+
+If the user is new to the plugin, asks how to start or what it needs („hogyan kezdjem”, „mi kell hozzá”, "how do I
+start"), or a command just failed because Node.js or an app is missing, run **`office-start`** first: it checks Node.js
+and the apps, says where they come from, asks before downloading, and says what works where. In short: a plain Chat in
+Claude Desktop can make **Word and PDF** files only (the two registered servers below); **Excel and PowerPoint files need
+Cowork or Claude Code**, where commands can run.
 
 ## The command
 

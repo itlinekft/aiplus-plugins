@@ -10269,13 +10269,19 @@ ${VERIFY_USAGE}
 }
 
 // src/bin/aiplus-office.ts
-var VERSION = "0.1.0";
+var VERSION = "0.1.1";
+var NODE_MIN_MAJOR = 20;
+function nodeLine(version) {
+  const major = Number(/^v?(\d+)/.exec(version)?.[1]);
+  const ok = Number.isFinite(major) && major >= NODE_MIN_MAJOR;
+  return `node: ${version} (${ok ? "ok" : "too old"}: needs ${NODE_MIN_MAJOR} or newer)`;
+}
 function usage() {
   return `usage: aiplus-office <command> [args]
 
 commands:
   apps [--json]                list the office apps (offline)
-  status [--json]              installed versions, cache size (never downloads)
+  status [--json]              Node.js version, host, installed versions, cache size (never downloads)
   install <app\u2026>|--all         provision <app>-cli for each app, print one JSON report per app
   verify <file> [assertions\u2026]  mechanical output checks (aiplus-office verify --help)
   doc prepare <in.md> --out <dir>  fill a docx template, inline images/diagrams (aiplus-office doc --help)
@@ -10300,6 +10306,8 @@ function defaultCliDeps() {
     stderr: (t) => process.stderr.write(t),
     env: process.env,
     platform: process.platform,
+    arch: process.arch,
+    nodeVersion: process.version,
     homedir: d.homedir,
     now: d.now,
     runVerify: (argv) => runVerify(argv, {}),
@@ -10352,6 +10360,10 @@ function statusCommand(rest, deps) {
 `);
     return 0;
   }
+  deps.stdout(`${nodeLine(deps.nodeVersion)}
+`);
+  deps.stdout(`host: ${deps.platform}/${deps.arch}
+`);
   deps.stdout(`cache: ${statusRoot(deps)}
 `);
   for (const r of rows) {
@@ -10464,7 +10476,9 @@ if (isEntry()) {
   );
 }
 export {
+  NODE_MIN_MAJOR,
   VERSION,
   main,
+  nodeLine,
   usage
 };
