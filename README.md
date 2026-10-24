@@ -5,9 +5,10 @@ Claude plugins of the ITLine AI+ products, served as a Claude plugin marketplace
 | Plugin | Product | What it holds |
 |---|---|---|
 | `aiplus` | AI+ Meeting Asszisztens | the skills that drive the meeting engine's tools |
+| `aiplus-office` | Ingyenes irodai AI+ modul | irodai skillek és az `aiplus-office` parancs; a WordCraft, GridCraft, DeckCraft és PdfCraft programokat első használatkor maga tölti le |
 
-A plugin here is only the Claude-side half. It works with its product's engine, which its own installer puts on the
-computer.
+The `aiplus` plugin is the Claude-side half of its product: it works with the product's engine, which its own installer
+puts on the computer. `aiplus-office` needs no installer: it downloads the ArtCraft apps itself on first use.
 
 **Claude Desktop:** Customize → Plugins → Add marketplace → `itlinekft/aiplus-plugins`.
 

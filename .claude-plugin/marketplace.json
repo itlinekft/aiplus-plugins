@@ -10,6 +10,12 @@
       "source": "./plugins/aiplus",
       "version": "0.4.17",
       "description": "Az AI+ Meeting Asszisztens skilljei az aiplus motor MCP eszközeire."
+    },
+    {
+      "name": "aiplus-office",
+      "source": "./plugins/aiplus-office",
+      "version": "0.1.0",
+      "description": "Ingyenes AI+ modul: a Claude irodai fájlokat készít és szerkeszt Word, Excel, PowerPoint és PDF formátumban, az ingyenes, nyílt forrású ArtCraft programokkal (WordCraft, GridCraft, DeckCraft, PdfCraft). Magyar irodai mintákkal: árajánlat, árlista, prezentáció. Minden kész fájlt gépi ellenőrzés néz át. Az ArtCraft programok korai verziók."
     }
   ]
 }
