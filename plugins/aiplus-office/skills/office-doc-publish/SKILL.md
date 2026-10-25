@@ -3,10 +3,10 @@ name: office-doc-publish
 description: Publish Markdown with frontmatter as a DOCX and PDF on the company's own Word template, with free ArtCraft apps - fill the template's placeholders (customer name, offer number, date), append the body with tables, optional table of contents, optional PdfCraft package and password; verified and resumable. Use for "make a DOCX from this markdown with our template", "publish this as a PDF", "markdown to Word", and Hungarian jobs - árajánlat, szerződés, díjbekérő kísérőlevél, ajánlat PDF-ben, céges sablon kitöltése.
 ---
 
-# office-doc-publish — Markdown + company template → DOCX + PDF (→ packaged PDF)
+# office-doc-publish: Markdown + company template → DOCX + PDF (→ packaged PDF)
 
 `aiplus-office doc prepare` fills the template's `{{ name }}` placeholders (frontmatter, `--var`, template defaults,
-system variables such as `{{ $date }}`) — also in text boxes, headers and footers that WordCraft's CLI cannot reach — and
+system variables such as `{{ $date }}`): also in text boxes, headers and footers that WordCraft's CLI cannot reach, and
 prepares the body; WordCraft then appends the body and exports; PdfCraft packages the result. No pandoc, no Docker, no
 Word. Read `office-wordcraft` (and `office-pdfcraft` for step 3) first. Resumable-job rules: **Office jobs** in
 `office-router`.
@@ -31,7 +31,7 @@ The template is a folder `<templates-dir>/<name>/template.docx` (optionally with
 Markdown's folder or an `--allow-path`), `$AIPLUS_OFFICE_TEMPLATES_DIR`, `./templates`, `~/Documents/templates`.
 Passwords never go into `job.json`, gate reports or step files.
 
-### Step 0 — Preflight and job
+### Step 0: Preflight and job
 
 **Output:** `office-jobs/<slug>/job.json` (created or loaded).
 **Gate:** `check: job`.
@@ -46,10 +46,10 @@ Set up the job (**Office jobs** in `office-router`) and run **Resume**.
 jq -e '.name and .workflow and (.steps | type == "object")' "office-jobs/$SLUG/job.json"
 ```
 
-### Step 1 — Prepare
+### Step 1: Prepare
 
 **Output:** `01-prepare/template.filled.docx`, `01-prepare/body.md`, `01-prepare/prepare.json`.
-**Gate:** `check: prepare` — no unresolved placeholder, unrendered diagram, skipped or remote image, and every
+**Gate:** `check: prepare`: no unresolved placeholder, unrendered diagram, skipped or remote image, and every
 template-defaulted variable confirmed by the user.
 
 ```bash
@@ -60,13 +60,13 @@ Frontmatter keys: `template`, `templates_dir`, `language` (`hu` gives `2026. okt
 `document_title`, `document_name`, `enable_toc`, `toc_heading`; every other scalar key is a template variable
 (`--var` wins over frontmatter, which wins over the template's `variables.xml` default). Read `prepare.json`:
 
-- `defaulted` — variables that still carry the **template's default** (a real template may still hold the last
+- `defaulted`: variables that still carry the **template's default** (a real template may still hold the last
   customer's name or offer number). **Show each default and ask the user to confirm or supply a value**; only then run
   the gate with `DEFAULTS_CONFIRMED=1`.
-- `unresolved` — placeholders with no value: supply the variable or, with the user's consent, `--allow-missing`.
-- `mermaid.unrendered` — diagrams left as code (no `mmdc`): ask the user to install it or accept code blocks.
-- `images.skipped` / `images.remote` — images outside the Markdown's folder (pass `--allow-path`), missing, or remote.
-- `pictures` — present when the template owns images: `body.md` then carries `CRAFTIMG0001`-style markers and step 2 puts
+- `unresolved`: placeholders with no value: supply the variable or, with the user's consent, `--allow-missing`.
+- `mermaid.unrendered`: diagrams left as code (no `mmdc`): ask the user to install it or accept code blocks.
+- `images.skipped` / `images.remote`: images outside the Markdown's folder (pass `--allow-path`), missing, or remote.
+- `pictures`: present when the template owns images: `body.md` then carries `CRAFTIMG0001`-style markers and step 2 puts
   the pictures in.
 
 ```bash check: prepare
@@ -76,10 +76,10 @@ jq -e --arg ok "${DEFAULTS_CONFIRMED:-0}" '
   and ((.defaulted | length == 0) or $ok == "1")' prepare.json
 ```
 
-### Step 2 — Render
+### Step 2: Render
 
 **Output:** `02-render/out.docx` and `02-render/out.pdf` (the docx is verified through its pdf).
-**Gate:** `aiplus-office verify out.pdf --pages N --text-contains "<title>" --text-contains "<a value you supplied>"` —
+**Gate:** `aiplus-office verify out.pdf --pages N --text-contains "<title>" --text-contains "<a value you supplied>"`: 
 `N` is WordCraft's own page count of the docx.
 
 One WordCraft run opens the **filled** template with `run --file` (never `run --template`: it drops the template's
@@ -110,7 +110,7 @@ not found, so check short values that sit on their own line. The body's **first 
 the title and start `body.md` with a prose line. Then **look at page 1** (`aiplus-office pdfcraft exec render out.pdf
 --page 1 --dpi 80 --out <abs>.png`, read the image): the gate cannot see a broken cover, a missing bullet or a wrong table.
 
-### Step 3 — Package (optional)
+### Step 3: Package (optional)
 
 **Output:** `03-package/final.pdf` (combined with appendices, audited, optionally protected).
 **Gate:** `aiplus-office verify` on the **unprotected** pdf (`--pages` = sum of the parts). A protected pdf cannot be
@@ -135,7 +135,7 @@ step downstream of it. Never record a password.
 
 Stop at the failed gate; never continue past it. Re-discover the commands you used (`aiplus-office wordcraft exec
 commands --json | jq …`), repeat the step and re-run the gate. At most 2 retries per step; then stop and report the verify
-output and what was tried. `verify` exit `3` means PdfCraft could not be provisioned: report it — never treat it as a pass.
+output and what was tried. `verify` exit `3` means PdfCraft could not be provisioned: report it: never treat it as a pass.
 
 ## Worked example (Hungarian): árajánlat from Markdown
 
@@ -154,7 +154,7 @@ cat > ajanlat.md <<'EOF'
 ---
 template: arajanlat
 language: hu
-document_title: Árajánlat – irodabútor
+document_title: Árajánlat, irodabútor
 ugyfel_nev: Minta Kereskedelmi Kft.
 ajanlat_szam: AJ-2026-014
 ervenyes_napig: 30

@@ -3,7 +3,7 @@ name: office-data-visual
 description: Turn numbers into a finished office visual with free ArtCraft apps - a GridCraft workbook with formulas and a formula-error read-back, a chart, an A4 PDF and a DeckCraft slide; verified and resumable. Use for "make a price list with VAT and a chart", "chart this spreadsheet", "put the revenue chart on a slide", and Hungarian jobs - árlista ÁFA-val, táblázat grafikonnal, kimutatás, költségvetés diagrammal, adat egy prezentáció diájára.
 ---
 
-# office-data-visual — data → workbook + read-back → chart PDF → slide
+# office-data-visual: data → workbook + read-back → chart PDF → slide
 
 GridCraft computes and charts, PdfCraft renders the exported page, DeckCraft puts it on a slide. **GridCraft prints
 formula errors as values with exit 0**, so the chart's source range is read back before anything is exported. Read
@@ -38,12 +38,12 @@ dates and the letters ő/ű"):
   PDF through WordCraft, and the chart on the slide drawn by DeckCraft's `insert.chart` from the read-back values;
   both keep the letters (measured). Step 2's gate `--hu-glyphs` fails on a PDF that lost them, whichever route.
 
-### Step 0 — Preflight and job
+### Step 0: Preflight and job
 
 **Output:** `office-jobs/<slug>/job.json` (created or loaded).
 **Gate:** `check: job`.
 
-Ask for the data (a file or numbers), the VAT rule (27% is the general Hungarian rate; 18% and 5% exist for some goods —
+Ask for the data (a file or numbers), the VAT rule (27% is the general Hungarian rate; 18% and 5% exist for some goods: 
 ask, do not assume for every line), rounding (per line or on the total), the chart type and the title. Set up the job
 (**Office jobs** in `office-router`) and run **Resume**.
 
@@ -52,15 +52,15 @@ ask, do not assume for every line), rounding (per line or on the total), the cha
 jq -e '.name and .workflow and (.steps | type == "object")' "office-jobs/$SLUG/job.json"
 ```
 
-### Step 1 — Workbook and read-back
+### Step 1: Workbook and read-back
 
 **Output:** `01-data/arlista.xlsx` (data, formulas, formats and the chart object) and `01-data/readback.out`.
-**Gate:** `check: readback` — the source range holds none of `#NAME?` `#DIV/0!` `#REF!` `#VALUE!` `#N/A` `#NUM!`
+**Gate:** `check: readback`: the source range holds none of `#NAME?` `#DIV/0!` `#REF!` `#VALUE!` `#N/A` `#NUM!`
 `#NULL!`. A hit stops the step: fix the formula (`cat --formulas` shows the source); **no chart is exported**. Then
 `aiplus-office verify arlista.xlsx --hu-numbers` must exit 0, and every total is read back with `eval '=D5' --json`
 and compared with the value you computed yourself from the input.
 
-`range.setValues` types data and formulas (strings starting `=` are formulas — English names, dot decimals, comma
+`range.setValues` types data and formulas (strings starting `=` are formulas: English names, dot decimals, comma
 separators: `=B2*0.27`, `=SUM(B2:B4)`; amounts as JSON numbers, `1330.5`, never the text „1 330,50"; dates as
 `"2026-10-31"`), `home.numberFormat` shows forints (`# ##0 "Ft"`), `insert.chart` adds the chart
 (`range`, `type` column|bar|line|pie|…, `title`, `at` the anchor cell, `width`/`height` px), `pageLayout.size` and
@@ -76,7 +76,7 @@ aiplus-office verify arlista.xlsx --hu-numbers
 Also run `aiplus-office gridcraft exec check arlista.xlsx`: it recalculates every formula and round-trips the file (exit 1
 on any difference).
 
-### Step 2 — PDF (and the page image)
+### Step 2: PDF (and the page image)
 
 **Output:** `02-chart/arlista.pdf` (route A also `02-chart/oldal.png`).
 **Gate:** `aiplus-office verify arlista.pdf --pages 1 --hu-glyphs <workbook> --text-contains "<gross total>"` (route A
@@ -89,7 +89,7 @@ Pick the route: route B when the workbook's text or the chart title holds ő, ű
 ! { aiplus-office gridcraft exec cat "$JOB/01-data/arlista.xlsx"; printf '%s\n' "$CHART_TITLE"; } | grep -q '[őűŐŰ]'
 ```
 
-**Route A** — GridCraft's PDF with the chart, rendered to an image for the slide:
+**Route A**: GridCraft's PDF with the chart, rendered to an image for the slide:
 
 ```bash
 aiplus-office gridcraft exec run --in "$JOB/01-data/arlista.xlsx" --out "$JOB/02-chart/arlista.pdf"
@@ -99,7 +99,7 @@ aiplus-office pdfcraft exec render "$JOB/02-chart/arlista.pdf" --page 1 --dpi 10
 
 Read `oldal.png` before the slide step: the gate cannot see a cut-off column or an empty chart.
 
-**Route B** — the table through WordCraft (embedded font; a plain table, no chart), then read back the chart data:
+**Route B**: the table through WordCraft (embedded font; a plain table, no chart), then read back the chart data:
 
 ```bash
 aiplus-office gridcraft exec convert "$JOB/01-data/arlista.xlsx" "$JOB/02-chart/arlista.html"
@@ -112,13 +112,13 @@ aiplus-office gridcraft exec eval '=TEXTJOIN(",",TRUE,B2:B4)' --in "$JOB/01-data
 Tell the user in route B that the PDF is a table without the chart, and the chart is on the slide (GridCraft's own
 printout would lose ő and ű).
 
-### Step 3 — Slide
+### Step 3: Slide
 
 **Output:** `03-slide/dia.pptx` and `03-slide/dia.pdf`.
 **Gate:** `aiplus-office verify dia.pdf --pages 1 --text-contains "<slide title>"` (the pptx is verified through its pdf),
 and look at a rendered slide: chart labels are drawn, not extracted as text.
 
-**Route A** — a blank deck, one `titleOnly` slide, the page image with `insert.picture` and a `rect` below the title (an
+**Route A**: a blank deck, one `titleOnly` slide, the page image with `insert.picture` and a `rect` below the title (an
 A4 landscape page is 1.41:1; `[197,120,566,400]` fills the lower part of a 960×540 slide). For a slide in an existing
 deck use `office-deck`.
 
@@ -129,7 +129,7 @@ aiplus-office deckcraft exec convert "$JOB/03-slide/dia.pptx" "$JOB/03-slide/dia
 aiplus-office verify "$JOB/03-slide/dia.pdf" --pages 1 --text-contains "Árlista 2026"
 ```
 
-**Route B** — DeckCraft draws the chart from the step 2 read-back (categories and values as JSON; DeckCraft embeds its
+**Route B**: DeckCraft draws the chart from the step 2 read-back (categories and values as JSON; DeckCraft embeds its
 font, so ő and ű stay):
 
 ```bash
@@ -151,7 +151,7 @@ changed (new prices, an edited workbook); re-run every step downstream of it.
 Stop at the failed gate; never continue past it. Re-discover (`aiplus-office gridcraft exec commands --search <word>`,
 `aiplus-office deckcraft exec describe <id>`), repeat the step and re-run the gate. At most 2 retries per step; then stop
 and report. A read-back failure is **not** retried by re-exporting: fix the source cells first. `verify` exit `3` means
-PdfCraft could not be provisioned: report it — never treat it as a pass.
+PdfCraft could not be provisioned: report it: never treat it as a pass.
 
 ## Worked example (Hungarian): árlista with 27% ÁFA, gross total, chart and slide
 

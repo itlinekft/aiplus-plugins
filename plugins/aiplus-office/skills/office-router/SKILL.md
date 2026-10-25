@@ -3,13 +3,13 @@ name: office-router
 description: Router for office work with the free, open-source ArtCraft apps (WordCraft for DOCX, GridCraft for XLSX, DeckCraft for PPTX, PdfCraft for PDF), driven headless through the aiplus-office command, for Word, Excel, PowerPoint and PDF files. Use to pick the app and run the plan-discover-execute-save-verify loop for "make a Word document", "build a spreadsheet", "make a presentation", "merge these PDFs", "edit this Excel file", and for Hungarian office jobs - árajánlat, díjbekérő, árlista, szerződés, jelenléti ív, prezentáció, táblázat, készíts Word-dokumentumot, fűzd össze a PDF-eket. First run or setup questions go to office-start.
 ---
 
-# office-router — pick the office app, drive it headless, verify the result
+# office-router: pick the office app, drive it headless, verify the result
 
 The ArtCraft office apps are free, open-source (MIT OR Apache-2.0) native apps with a headless `<app>-cli` and a
 self-describing command registry. The `aiplus-office` command provisions those CLIs on first use (downloaded from the
 official `github.com/storytold/<app>` releases, SHA-256-checked against the release's `SHA256SUMS.txt`, cached per user,
 nothing installed system-wide) and gives one command surface for all four. **This skill chooses the app and owns the
-loop; each app has its own skill for its dialect, traps and recipes — read it before running anything in that app.**
+loop; each app has its own skill for its dialect, traps and recipes: read it before running anything in that app.**
 
 ## First run → `office-start`
 
@@ -34,12 +34,12 @@ Shell state does not survive between tool calls: repeat the line in each call. N
 aiplus-office apps                    # the 4 office apps (offline)
 aiplus-office status                  # what is installed, cache size and path (never downloads)
 aiplus-office install --all           # optional pre-provisioning; every <app> command also provisions on demand
-aiplus-office <app> exec <args…>      # run <app>-cli with <args…> verbatim — the bash route
+aiplus-office <app> exec <args…>      # run <app>-cli with <args…> verbatim (the bash route)
 aiplus-office verify <file> …         # mechanical output checks (below)
 aiplus-office doc prepare <in.md> --out <dir>   # fill a DOCX company template from Markdown frontmatter
 ```
 
-## Alpha caveat — say it, and check before anything leaves the office
+## Alpha caveat: say it, and check before anything leaves the office
 
 The apps are **early alpha** and are released almost daily. They read and write real DOCX/XLSX/PPTX/PDF, but not every
 feature of a Word, Excel or PowerPoint file survives a round trip (no VBA macros; complex formatting may change). So:
@@ -62,7 +62,7 @@ Picking rules: one app per format family; take the app whose *native* format the
 WordCraft, an XLSX to GridCraft). A new multi-page document is written in WordCraft and exported to PDF; PdfCraft edits
 PDFs that already exist. Cross-app jobs are chains of single-app steps that hand files to each other.
 
-## Workflow skills — whole office jobs
+## Workflow skills: whole office jobs
 
 | Workflow skill | Use it for | Drives |
 |---|---|---|
@@ -70,14 +70,14 @@ PDFs that already exist. Cross-app jobs are chains of single-app steps that hand
 | `office-deck` | an outline → DeckCraft slides → PDF handout (prezentáció) | DeckCraft, PdfCraft |
 | `office-data-visual` | numbers → GridCraft workbook with formulas and a read-back → chart → slide (árlista, kimutatás) | GridCraft, PdfCraft, DeckCraft |
 
-## The loop — every step, every app
+## The loop: every step, every app
 
 1. **Plan** the file this step must produce and the property that proves it right (page count, a total, a title).
-2. **Discover** — never guess ids. `aiplus-office <app> exec commands …` lists real ids and parameters (the filter is
-   `--search` in GridCraft, positional in DeckCraft, none in WordCraft — pipe to `grep`; PdfCraft uses `tools`).
+2. **Discover**: never guess ids. `aiplus-office <app> exec commands …` lists real ids and parameters (the filter is
+   `--search` in GridCraft, positional in DeckCraft, none in WordCraft: pipe to `grep`; PdfCraft uses `tools`).
    Ids change between alpha releases.
 3. **Execute** with `aiplus-office <app> exec …`. One failing `--cmd` aborts the whole run and writes nothing.
-4. **Save** the file (`--save`, `--out`, `--export` per app) — no CLI keeps state between runs.
+4. **Save** the file (`--save`, `--out`, `--export` per app): no CLI keeps state between runs.
 5. **Verify** mechanically before using the output as the next step's input:
 
 ```bash
@@ -97,7 +97,7 @@ aiplus-office gridcraft exec run --in t.xlsx --out t.pdf
 aiplus-office verify t.pdf --pages 1 --text-contains "Összesen" --text-contains "42"
 ```
 
-## Office jobs — resumable multi-step work
+## Office jobs: resumable multi-step work
 
 Workflow skills follow one convention (they link here, they do not restate it).
 
@@ -141,7 +141,7 @@ record_step() { # record_step NN-step "upstream ids comma-separated" verify-repo
 ## Out of scope
 
 Driving the desktop GUIs (`--bridge`, `--connect`, `ui_*` tools) is not supported: the proxy rejects those options; never
-open a desktop app to "see" a result — render a page to PNG and read the image instead. VBA macros, mail merge with
+open a desktop app to "see" a result: render a page to PNG and read the image instead. VBA macros, mail merge with
 Outlook, and SharePoint/OneDrive co-editing are not available.
 
 ## Setup notes

@@ -3,7 +3,7 @@ name: office-pdfcraft
 description: Headless PDF work with PdfCraft, provisioned on demand by aiplus-office: combine, split, extract, rotate, delete and reorder pages, read text, render a page to PNG, set metadata, password-protect, audit faux redactions, script its 175 tools. Use for "merge these PDFs", "extract pages 1 and 3", "rotate page 1 and drop page 2", "what text is in this PDF", "protect this PDF with a password", and Hungarian jobs - PDF összefűzése, oldalak kivágása, szerződés PDF jelszóval, díjbekérő és árajánlat egy PDF-ben.
 ---
 
-# office-pdfcraft — headless PDF editing
+# office-pdfcraft: headless PDF editing
 
 PdfCraft is ArtCraft's PDF app (175 automation tools in 0.13.0). `aiplus-office` provisions the headless `pdfcraft-cli`
 on first use (no desktop app). App choice, the loop, the alpha caveat and the MCP policy live in `office-router`.

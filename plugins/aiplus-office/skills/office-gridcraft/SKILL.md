@@ -3,7 +3,7 @@ name: office-gridcraft
 description: Headless spreadsheets with GridCraft (XLSX/CSV workbooks, 500+ formula functions, evaluation, recalculation, charts, PDF export), provisioned on demand by aiplus-office; reads and writes Excel (XLSX) files. Use for "build a price list with formulas", "add a VAT column", "convert this xlsx to csv", "what does this formula give", "change a cell and recalculate", "export the sheet to pdf", and Hungarian jobs - árlista, táblázat, ÁFA számítás, jelenléti ív, költségvetés, kimutatás.
 ---
 
-# office-gridcraft — headless spreadsheets
+# office-gridcraft: headless spreadsheets
 
 GridCraft is ArtCraft's spreadsheet app (346 commands in 0.11.1). `aiplus-office` provisions the headless
 `gridcraft-cli` on first use (no desktop app). App choice, the loop, the alpha caveat and the MCP policy live in

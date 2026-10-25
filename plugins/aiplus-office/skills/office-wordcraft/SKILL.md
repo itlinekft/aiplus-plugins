@@ -3,7 +3,7 @@ name: office-wordcraft
 description: Headless word processing with WordCraft (DOCX/ODT/RTF, 600+ editing commands, Markdown and HTML import, PDF export), provisioned on demand by aiplus-office; reads and writes Word (DOCX) files. Use for "write this as a Word document", "convert this markdown to docx", "turn this docx into a pdf", "append a paragraph to this docx", "extract the text of this docx", and Hungarian document jobs - árajánlat, szerződés, díjbekérő kísérőlevél, levél, jegyzőkönyv as DOCX or PDF.
 ---
 
-# office-wordcraft — headless word processor
+# office-wordcraft: headless word processor
 
 WordCraft is ArtCraft's word processor (638 commands in 0.10.0). `aiplus-office` provisions the headless `wordcraft-cli`
 on first use (no desktop app). Choosing between apps, the loop, the alpha caveat and the MCP policy live in

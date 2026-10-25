@@ -3,7 +3,7 @@ name: office-deck
 description: Turn an outline into a presentation with free ArtCraft apps - DeckCraft slides from the outline (title slide + one slide per section, bullets, pictures), a PDF export and a PdfCraft handout with metadata; verified and resumable. Use for "make a deck from this outline", "build a 5-slide presentation about our Q3 results", "export the deck as a PDF handout", and Hungarian jobs - prezentáció vázlatból, diasor, negyedéves beszámoló, bemutató PDF-ben.
 ---
 
-# office-deck — outline → DeckCraft slides → PDF handout
+# office-deck: outline → DeckCraft slides → PDF handout
 
 Read `office-deckcraft` (and `office-pdfcraft` for step 3) first. Resumable-job rules: **Office jobs** in `office-router`.
 
@@ -25,7 +25,7 @@ command -v aiplus-office >/dev/null || aiplus-office() { node "${CLAUDE_PLUGIN_R
 `pptx` is the editable deck, `pdf` the delivery (one page per slide). A `pptx` cannot be probed directly: it is gated
 through its `pdf` export.
 
-### Step 0 — Preflight and job
+### Step 0: Preflight and job
 
 **Output:** `office-jobs/<slug>/job.json` (created or loaded).
 **Gate:** `check: job`.
@@ -38,11 +38,11 @@ Ask for the audience, the number of slides and any pictures (PNG/JPG files). Set
 jq -e '.name and .workflow and (.steps | type == "object")' "office-jobs/$SLUG/job.json"
 ```
 
-### Step 1 — Outline
+### Step 1: Outline
 
-**Output:** `01-outline/vazlat.md` — `# Deck title`, an optional subtitle line, then one `## Slide title` per slide with
+**Output:** `01-outline/vazlat.md`: `# Deck title`, an optional subtitle line, then one `## Slide title` per slide with
 `- bullet` lines.
-**Gate:** `check: outline` — a title and at least one slide.
+**Gate:** `check: outline`: a title and at least one slide.
 
 Write the outline with the user: one idea per slide, at most 5 bullets, short lines (a bullet longer than ~60 characters
 wraps badly). The slide count + 1 (title slide) is the page count the gates expect.
@@ -52,10 +52,10 @@ wraps badly). The slide count + 1 (title slide) is the page count the gates expe
 grep -q '^# ' vazlat.md && test "$(grep -c '^## ' vazlat.md)" -ge 1
 ```
 
-### Step 2 — Slides
+### Step 2: Slides
 
 **Output:** `02-deck/prezentacio.pptx` and `02-deck/prezentacio.pdf`.
-**Gate:** `aiplus-office verify prezentacio.pdf --pages N --text-contains "<deck title>"` — `N` = slides in the outline + 1.
+**Gate:** `aiplus-office verify prezentacio.pdf --pages N --text-contains "<deck title>"`: `N` = slides in the outline + 1.
 
 One `run`: `file.new` with `"blank":true`, one `slide.new` for the title slide (`layout` `title`, `body` = subtitle), one
 per `## ` section (`titleAndContent`, `body` = the bullets joined by `\n`); a picture goes on the slide just created with
@@ -73,10 +73,10 @@ aiplus-office verify "$JOB/02-deck/prezentacio.pdf" --pages 2 --text-contains "N
 Look at a slide before going on: `aiplus-office deckcraft exec render prezentacio.pptx --slide 1 --scale 0.5 d2.png`
 (slide numbers are **0-based**), then read the image.
 
-### Step 3 — Handout
+### Step 3: Handout
 
 **Output:** `03-handout/kiosztmany.pdf`.
-**Gate:** `aiplus-office verify` — `--pages`, `--text-contains "<deck title>"`.
+**Gate:** `aiplus-office verify`: `--pages`, `--text-contains "<deck title>"`.
 
 PdfCraft takes the deck's pdf: `edit` sets the title and author metadata and can drop pages; `combine` appends an
 appendix. Protect only when asked (recipe `protect` of `office-pdfcraft`).
@@ -94,8 +94,8 @@ changed (an edited outline, a replaced picture); re-run every step downstream of
 ## When a gate fails
 
 Stop at the failed gate; never continue past it. Re-discover (`aiplus-office deckcraft exec describe <id>`, `commands
-<word>` — the filter is positional), repeat the step, re-run the gate. At most 2 retries per step; then stop and report.
-`verify` exit `3` means PdfCraft could not be provisioned: report it — never treat it as a pass.
+<word>`: the filter is positional), repeat the step, re-run the gate. At most 2 retries per step; then stop and report.
+`verify` exit `3` means PdfCraft could not be provisioned: report it: never treat it as a pass.
 
 ## Worked example (Hungarian): a three-slide quarterly deck
 

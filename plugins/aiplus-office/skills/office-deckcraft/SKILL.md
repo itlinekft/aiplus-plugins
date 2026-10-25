@@ -3,7 +3,7 @@ name: office-deckcraft
 description: Headless presentations with DeckCraft (PPTX slides, layouts, shapes, text, tables, pictures), provisioned on demand by aiplus-office; reads and writes PowerPoint (PPTX) files. Build a deck from commands, export it to PDF, render slides to PNG. Use for "make a 3-slide presentation", "add a title slide to this pptx", "export this deck to pdf", "render slide 2 as an image", and Hungarian jobs - prezentáció, diasor, bemutató, vetítés PPTX-ben.
 ---
 
-# office-deckcraft — headless presentations
+# office-deckcraft: headless presentations
 
 DeckCraft is ArtCraft's presentation app (321 commands in 0.10.0). `aiplus-office` provisions the headless
 `deckcraft-cli` on first use (no desktop app). App choice, the loop, the alpha caveat and the MCP policy live in
