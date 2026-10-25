@@ -7649,15 +7649,19 @@ function assertTreeSafe(tree) {
   };
   walk(tree);
 }
+function systemTar(platform, env) {
+  if (platform !== "win32") return exe("tar", platform);
+  return path.win32.join(env.SystemRoot || env.SYSTEMROOT || "C:\\Windows", "System32", exe("tar", platform));
+}
 async function listArchive(deps, archive) {
-  const tar = exe("tar", deps.platform);
+  const tar = systemTar(deps.platform, deps.env);
   const names = lines((await deps.exec(tar, ["-tf", archive])).stdout);
   const verbose = lines((await deps.exec(tar, ["-tvf", archive])).stdout);
   assertSafeListing(names, verbose);
 }
 async function extractArchive(deps, archive, dest) {
   if (deps.platform === "darwin") await deps.exec("ditto", ["-x", "-k", archive, dest]);
-  else await deps.exec(exe("tar", deps.platform), ["-xf", archive, "-C", dest]);
+  else await deps.exec(systemTar(deps.platform, deps.env), ["-xf", archive, "-C", dest]);
 }
 var UA = "aiplus-office";
 async function apiJson(deps, url) {
@@ -10477,7 +10481,7 @@ ${VERIFY_USAGE}
 }
 
 // src/bin/aiplus-office.ts
-var VERSION = "0.1.2";
+var VERSION = "0.1.3";
 var NODE_MIN_MAJOR = 20;
 function nodeLine(version) {
   const major = Number(/^v?(\d+)/.exec(version)?.[1]);

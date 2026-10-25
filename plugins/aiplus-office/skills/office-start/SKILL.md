@@ -1,6 +1,6 @@
 ---
 name: office-start
-description: First run of the aiplus-office plugin - checks Node.js and the four free ArtCraft office apps (aiplus-office status), says where the apps come from, offers to download them (install --all), says plainly what works where (a plain Chat in Claude Desktop - Word and PDF only; Cowork or Claude Code - also Excel and PowerPoint files) and where the desktop window apps are officially downloaded. Use on first use, after installing the plugin, when a command fails because Node.js or an app is missing, or for "how do I start", "what does it need", "setup", "install the apps", "where do the programs come from", "why can't you make the spreadsheet", and Hungarian - első indítás, telepítés, beállítás, hogyan kezdjem, mi kell hozzá, honnan jönnek a programok, miért nem készül el a táblázat vagy a prezentáció.
+description: First run of the aiplus-office plugin - checks Node.js and the four free ArtCraft office apps (aiplus-office status), says where the apps come from, offers to download them (install --all), says plainly what works where (a plain Chat in Claude Desktop: Word and PDF only; Claude on the user's own computer, Claude Code or a Claude Desktop session on This computer: also Excel and PowerPoint files; a session in the cloud cannot download the apps) and where the desktop window apps are officially downloaded. Use on first use, after installing the plugin, when a command fails because Node.js or an app is missing, or for "how do I start", "what does it need", "setup", "install the apps", "where do the programs come from", "why can't you make the spreadsheet", and Hungarian - első indítás, telepítés, beállítás, hogyan kezdjem, mi kell hozzá, honnan jönnek a programok, miért nem készül el a táblázat vagy a prezentáció.
 ---
 
 # office-start: first run, what it needs, where it comes from, what works where
@@ -11,18 +11,21 @@ asks before downloading anything. Office jobs themselves belong to `office-route
 
 **Answer in the user's language.** Every user-facing block below has a Hungarian (**HU**) and an English (**EN**)
 wording with the same facts: use the one that matches the user (Hungarian when unsure), in these words or close to them.
-No jargon beyond „Chat", „Cowork" and „Claude Code": do not say MCP, shell, CLI or cache to the user.
+No jargon beyond „Chat", „Cowork", „Claude Code" and „This computer" (the environment name Claude Desktop shows for a
+session on the user's own computer): do not say MCP, shell, CLI or cache to the user.
 
 ## 1. Can you run commands here?
 
 If you have **no tool that runs commands** (a plain Chat in Claude Desktop), skip to **5. What works where** and say:
 
 > **HU:** Itt, a sima Chatben nem tudok programot futtatni a gépeden, ezért a gépet most nem tudom ellenőrizni. Word- és
-> PDF-fájlokkal itt is tudok dolgozni; Excel- és PowerPoint-fájlhoz nyisd meg a Cowork-ot vagy a Claude Code-ot, és ott
-> kérdezd újra: „hogyan kezdjem?”
+> PDF-fájlokkal itt is tudok dolgozni. Excel- és PowerPoint-fájlhoz olyan munkamenet kell, amelyben a Claude a saját
+> gépeden fut: a Claude Code, vagy a Claude Desktopban egy „This computer” környezetű munkamenet. Ott kérdezd újra:
+> „hogyan kezdjem?”
 >
 > **EN:** In a plain Chat I cannot run programs on your computer, so I cannot check it from here. I can work with Word
-> and PDF files here too; for Excel and PowerPoint files, open Cowork or Claude Code and ask again: “how do I start?”
+> and PDF files here too. Excel and PowerPoint files need a session where Claude runs on your own computer: Claude Code,
+> or in Claude Desktop a session whose environment is “This computer”. Ask again there: “how do I start?”
 
 ## 2. Node.js
 
@@ -98,8 +101,24 @@ aiplus-office status
 ```
 
 `install` prints one JSON line per app (`version`, `cacheHit`); exit `0` = all four are there. Exit `69` = a download
-failed: say which program, and the likely cause in plain words: no internet, a firewall or proxy blocking GitHub, or
-GitHub's download limit for the hour (then try again later). Do not retry more than once without the user.
+failed: say which program, and the likely cause in plain words: no internet, a firewall or proxy blocking GitHub,
+GitHub's download limit for the hour (then try again later), or a session that runs in the cloud, which cannot download
+the programs (measured 2026-10-24; then the user opens a session on their own computer). Do not retry more than once
+without the user.
+
+**A program already installed on the computer.** If the download does not work but the user has the program's desktop
+app installed, the module can use that copy: point `AIPLUS_OFFICE_<APP>_BIN` at the app's background part (its
+`<app>-cli` file) in the command, e.g. on Windows
+`AIPLUS_OFFICE_GRIDCRAFT_BIN="C:\Program Files\GridCraft\gridcraft-cli.exe" aiplus-office gridcraft …`; `status` then
+shows it as `override:`. Ask first, and say it like this:
+
+> **HU:** Ha a letöltés nem megy, de a program ablakos változata már fent van a gépeden, a modul azt is tudja használni.
+> A GridCraftnál Windowson ez általában a `C:\Program Files\GridCraft\gridcraft-cli.exe` fájl, a program háttérben futó
+> része. Használjam ezt?
+>
+> **EN:** If the download does not work but the program's window app is already on your computer, the module can use
+> that one. For GridCraft on Windows this is usually `C:\Program Files\GridCraft\gridcraft-cli.exe`, the part of the
+> program that runs in the background. Shall I use it?
 
 ## 5. What works where
 
@@ -109,19 +128,22 @@ Say it plainly, once:
 > a munkamappádhoz férnek hozzá. **Excel- és PowerPoint-fájlt a sima Chat nem tud készíteni.** Ezt a két programot a
 > Claude csak úgy tudja használni, hogy programot futtat a gépen, és a sima Chat erre nem képes; kapcsolatként
 > biztonsági okból nem kötöttük be őket, mert nem lehet őket a munkamappára korlátozni. **Excel- és PowerPoint-fájlhoz
-> a Cowork vagy a Claude Code kell.**
+> a Claude-nak a saját gépeden kell futnia:** a Claude Code-ban, vagy a Claude Desktopban egy „This computer” környezetű
+> munkamenetben. A felhőben futó munkamenet nem tudja letölteni a programokat.
 >
 > **EN:** **Word and PDF** work in a plain Chat too: for these the module gives Claude two built-in connections, which
 > reach only your working folder. **A plain Chat cannot make Excel or PowerPoint files.** Claude can use those two
 > programs only by running a program on the computer, which a plain Chat cannot do; for safety they are not connected
-> the other way, because they cannot be limited to the working folder. **Excel and PowerPoint files need Cowork or
-> Claude Code.**
+> the other way, because they cannot be limited to the working folder. **Excel and PowerPoint files need Claude running
+> on your own computer:** in Claude Code, or in Claude Desktop in a session whose environment is “This computer”. A
+> session running in the cloud cannot download the programs.
 
 | HU: Ahol dolgozol · EN: Where you work | Word (DOCX) | PDF | Excel (XLSX) | PowerPoint (PPTX) |
 |---|---|---|---|---|
 | Claude Desktop, Chat | igen · yes | igen · yes | nem · no | nem · no |
-| Cowork | igen · yes | igen · yes | igen · yes | igen · yes |
+| Claude Desktop, „This computer” munkamenet · session | igen · yes | igen · yes | igen · yes | igen · yes |
 | Claude Code | igen · yes | igen · yes | igen · yes | igen · yes |
+| Felhőben futó munkamenet · a session in the cloud | nem mértük · not measured | nem mértük · not measured | nem · no | nem · no |
 
 This is what the plugin is built for; what has actually been tried is the next block. Say both.
 
@@ -130,19 +152,31 @@ This is what the plugin is built for; what has actually been tried is the next b
 <!-- office-start:tested: the ONLY place that says what has been tried. Update this block (both languages) when a
      measurement arrives (details and dates: docs/MEASURED.md of the repository); no other sentence restates it. -->
 
-> **HU: Amit eddig kipróbáltunk (2026. október 24.):**
+> **HU: Amit eddig kipróbáltunk (2026. október 25.):**
 > - Claude Code, Linux: mind a négy program letöltve; árlista, árajánlat és prezentáció elkészült és ellenőrizve.
 > - Claude Desktop, Windows 11: a modul telepíthető; telepítéskor a Word- és a PDF-kapcsolat jelenik meg. Hogy a
 >   Chatben ezek el is indulnak-e, még nem mértük.
-> - **Cowork: még nem teszteltük.** A próba folyamatban van. Ha ott valami nem indul, írd meg nekünk, mit látsz.
-> - Claude Code Windowson és macOS-en: még nem teszteltük.
+> - Claude Desktop, Windows 11, „This computer” munkamenet: egy Excel-formátumú árlista körülbelül egy perc alatt
+>   elkészült, és a Claude helyesen olvasta vissza.
+> - **Cowork a felhőben: nem működik.** A felhőben futó munkamenet nem tudta letölteni a programokat, így fájl sem
+>   készült. A saját gépen futó Cowork-ot még nem próbáltuk.
+> - macOS (Apple-processzoros Mac mini): mind a négy program letöltve és lefuttatva, az ellenőrzések rendben. A Claude
+>   Desktopot macOS-en még nem próbáltuk.
 >
-> **EN: What we have tried so far (24 October 2026):**
+> Ha valahol valami nem indul, írd meg nekünk, mit látsz.
+>
+> **EN: What we have tried so far (25 October 2026):**
 > - Claude Code, Linux: all four programs downloaded; a price list, an offer and a presentation made and checked.
 > - Claude Desktop, Windows 11: the module installs; the install shows the Word and the PDF connection. Whether they
 >   also start in Chat has not been measured yet.
-> - **Cowork: not tested yet.** The test is under way. If something does not start there, tell us what you see.
-> - Claude Code on Windows and macOS: not tested yet.
+> - Claude Desktop, Windows 11, a “This computer” session: a price list in Excel format made in about a minute, and
+>   Claude read it back correctly.
+> - **Cowork in the cloud: does not work.** The session running in the cloud could not download the programs, so no
+>   file was made. Cowork running on your own computer has not been tried yet.
+> - macOS (a Mac mini with an Apple processor): all four programs downloaded and run, the checks pass. Claude Desktop on
+>   macOS has not been tried yet.
+>
+> If something does not start somewhere, tell us what you see.
 
 ## 7. Good to know: three Hungarian limits
 
@@ -202,6 +236,6 @@ download page (checked 2026-10-24, see the repository's `docs/MEASURED.md`):
 ## 9. Close
 
 End with one concrete next step in the user's language, e.g. HU „Próbáld ki: »Készíts árlistát táblázatban három
-termékkel, 27% ÁFÁ-val«” (Cowork / Claude Code) or „»Írj árajánlatot Word-formátumban a Minta Kft. részére«” (Chat is
+termékkel, 27% ÁFÁ-val«” (Claude Code vagy „This computer” munkamenet) or „»Írj árajánlatot Word-formátumban a Minta Kft. részére«” (Chat is
 enough); EN “Try: »Make a price list spreadsheet with three products and 27% VAT«” or “»Write an offer in Word format
 for Minta Kft.«”. From here on the job belongs to `office-router` and its skills.

@@ -1,6 +1,6 @@
 ---
 name: office-router
-description: Router for office work with the free, open-source ArtCraft apps — WordCraft (DOCX), GridCraft (XLSX), DeckCraft (PPTX), PdfCraft (PDF) — driven headless through the aiplus-office command, for Word, Excel, PowerPoint and PDF files. Use to pick the app and run the plan-discover-execute-save-verify loop for "make a Word document", "build a spreadsheet", "make a presentation", "merge these PDFs", "edit this Excel file", and for Hungarian office jobs - árajánlat, díjbekérő, árlista, szerződés, jelenléti ív, prezentáció, táblázat, készíts Word-dokumentumot, fűzd össze a PDF-eket. First run or setup questions go to office-start.
+description: Router for office work with the free, open-source ArtCraft apps (WordCraft for DOCX, GridCraft for XLSX, DeckCraft for PPTX, PdfCraft for PDF), driven headless through the aiplus-office command, for Word, Excel, PowerPoint and PDF files. Use to pick the app and run the plan-discover-execute-save-verify loop for "make a Word document", "build a spreadsheet", "make a presentation", "merge these PDFs", "edit this Excel file", and for Hungarian office jobs - árajánlat, díjbekérő, árlista, szerződés, jelenléti ív, prezentáció, táblázat, készíts Word-dokumentumot, fűzd össze a PDF-eket. First run or setup questions go to office-start.
 ---
 
 # office-router — pick the office app, drive it headless, verify the result
@@ -17,7 +17,8 @@ If the user is new to the plugin, asks how to start or what it needs („hogyan 
 start"), or a command just failed because Node.js or an app is missing, run **`office-start`** first: it checks Node.js
 and the apps, says where they come from, asks before downloading, and says what works where. In short: a plain Chat in
 Claude Desktop can make **Word and PDF** files only (the two registered servers below); **Excel and PowerPoint files need
-Cowork or Claude Code**, where commands can run.
+Claude running on the user's own computer** (Claude Code, or a Claude Desktop session whose environment is „This
+computer"), where commands can run. A session in the cloud cannot download the apps (measured 2026-10-24).
 
 ## The command
 

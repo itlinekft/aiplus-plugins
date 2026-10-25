@@ -12,8 +12,9 @@ dolgozz másolaton, és az ügyfélnek szánt fájlt küldés előtt nézd át.
 - **Mi kell hozzá?** Node.js 20 vagy újabb (https://nodejs.org, „LTS”). A négy programot a modul első használatkor maga
   tölti le a hivatalos GitHub-oldalukról, ellenőrzőlistával egyeztetve, a saját felhasználói mappádba; telepítő és
   rendszergazdai jog nem kell.
-- **Mi hol működik?** A sima Chatben csak Word és PDF megy. **Excel- és PowerPoint-fájlhoz Cowork vagy Claude Code
-  kell.**
+- **Mi hol működik?** A sima Chatben csak Word és PDF megy. **Excel- és PowerPoint-fájlhoz a Claude-nak a saját
+  gépeden kell futnia:** Claude Code, vagy a Claude Desktopban „This computer” környezetű munkamenet. A felhőben futó
+  munkamenet nem tudja letölteni a programokat.
 - **Első lépés:** kérdezd meg a Claude-tól: „hogyan kezdjem?” Megnézi a gépet, elmondja, honnan jönnek a programok,
   és csak a beleegyezéseddel tölt le.
 
@@ -32,13 +33,15 @@ programs, says where they come from, offers to download them (only with your yes
 | Where you work | Word (DOCX) | PDF | Excel (XLSX) | PowerPoint (PPTX) |
 |---|---|---|---|---|
 | Claude Desktop, plain Chat | yes | yes | no | no |
-| Cowork | yes | yes | yes | yes |
+| Claude Desktop, a “This computer” session | yes | yes | yes | yes |
 | Claude Code | yes | yes | yes | yes |
+| a session running in the cloud | not measured | not measured | no | no |
 
 A plain Chat cannot run programs, so it reaches only the two programs connected to Claude directly (WordCraft and
 PdfCraft, limited to the working folder). GridCraft and DeckCraft cannot be limited to a folder, so they are not
-connected that way; Claude runs them as programs, which needs **Cowork or Claude Code**. This table is what the module
-is built for; what has been tried so far (Chat and Cowork on Windows) is kept up to date in the `office-start` skill.
+connected that way; Claude runs them as programs, which needs **Claude running on your own computer**. A session in the
+cloud cannot download the programs (a Cowork session in the cloud was tried on Windows: no file was made). This table is
+what the module is built for; what has been tried so far is kept up to date in the `office-start` skill.
 
 ## The ArtCraft programs are early versions (alpha)
 
