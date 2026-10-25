@@ -1,8 +1,12 @@
 {
   "name": "aiplus",
-  "version": "0.4.17",
-  "description": "AI+ Meeting Asszisztens: az élő meeting asszisztens a Claude Desktopban, a gépre telepített aiplus motorral.",
+  "version": "0.4.18",
+  "description": "AI+ Meeting Asszisztens: az élő meeting asszisztens a Claude Desktopban. A gépedre telepített AI+ motorral dolgozik, amelyet a saját telepítője tesz fel, és érvényes AI+ licenc kell hozzá. A plugin a skilleket adja: elindítja és követi a meetinget, és megnézi, hogy minden működik-e. English: AI+ Meeting Asszisztens: the live meeting assistant in Claude Desktop. It works with the AI+ engine on your computer, which its own installer puts there, and it needs a valid AI+ licence. The plugin brings the skills: it starts and follows a meeting and checks that everything works.",
   "author": {
-    "name": "AI Plus"
-  }
+    "name": "ITLine Kft.",
+    "url": "https://www.itline.hu/ai-plus/"
+  },
+  "license": "LicenseRef-ITLine-Proprietary",
+  "homepage": "https://www.itline.hu/ai-plus/",
+  "repository": "https://github.com/itlinekft/aiplus-plugins"
 }

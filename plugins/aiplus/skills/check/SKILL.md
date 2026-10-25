@@ -1,11 +1,11 @@
 ---
 name: check
-description: Check that AI Plus works on this machine — run the engine's tools end to end on a one-minute mic capture (or a replay scenario you name) and report what worked. Use when the user asks to test, check or troubleshoot AI Plus.
+description: Check that AI Plus works on this machine: run the engine's tools end to end on a one-minute mic capture (or a replay scenario you name) and report what worked. Use when the user asks to test, check or troubleshoot AI Plus.
 allowed-tools: mcp__aiplus__meeting_policy, mcp__aiplus__meeting_start, mcp__aiplus__meeting_poll, mcp__aiplus__meeting_emit, mcp__aiplus__meeting_stop, mcp__aiplus__meeting_licence, mcp__aiplus__meeting_voice, mcp__aiplus__meeting_echo, mcp__aiplus__meeting_gateway, mcp__aiplus__meeting_speech, mcp__aiplus__meeting_name, mcp__aiplus__meeting_status, mcp__aiplus__meeting_doctor, mcp__aiplus__meeting_document, mcp__aiplus__meeting_help
 ---
 
 <!-- aiplus:block:start -->
-> **AI+ Meeting Assistant plugin 0.4.17** · tool contract 10. If the user asks which version you are on, answer with this line.
+> **AI+ Meeting Assistant plugin 0.4.18** · tool contract 10. If the user asks which version you are on, answer with this line.
 >
 > **Before anything else, call `meeting_status`.**
 > - **The tool does not exist** → the AI+ Meeting Assistant engine is not registered in Claude Desktop. Tell the user to run the AI+ Meeting Assistant installer, then restart Claude Desktop completely. Do not try to work without the tools. If you are a Cowork task running in the cloud rather than on the user's computer, reinstalling will not help: a cloud task cannot reach the engine on the user's computer, so say that the meeting assistant needs a task on their own computer.
@@ -24,7 +24,7 @@ result.
 3. `meeting_start` with `source: "mic"`, `max_minutes: 1`, `wall: true`, and ask the user to say
    a sentence or two and play a few seconds of any audio. If the user gave a scenario directory (a directory on the user's computer, where the engine
    runs; your own sandbox's files are not visible to it), use `source: "replay"`, `scenario: <that directory>`, `speed: 1` instead. If the start is
-   refused because the dir is owned, a meeting is already running — perhaps the user's own, in
+   refused because the dir is owned, a meeting is already running: perhaps the user's own, in
    another window. Do not stop it. Call `meeting_status`, tell the user a meeting is in progress
    (its `owner` and `runtimeDir`), and ask whether to stop it for the check. Only after a clear
    yes call `meeting_stop` and start again; otherwise end with the verdict **not run: a meeting

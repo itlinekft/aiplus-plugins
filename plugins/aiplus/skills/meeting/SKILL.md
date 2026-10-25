@@ -1,11 +1,11 @@
 ---
 name: meeting
-description: Run the AI+ Meeting Assistant live — start capturing the meeting audio, follow the transcript, react on the monitor wall, and stop with a summary. Use when the user asks to start, follow or stop a meeting.
+description: Run the AI+ Meeting Assistant live: start capturing the meeting audio, follow the transcript, react on the monitor wall, and stop with a summary. Use when the user asks to start, follow or stop a meeting.
 allowed-tools: mcp__aiplus__meeting_policy, mcp__aiplus__meeting_start, mcp__aiplus__meeting_poll, mcp__aiplus__meeting_emit, mcp__aiplus__meeting_stop, mcp__aiplus__meeting_licence, mcp__aiplus__meeting_voice, mcp__aiplus__meeting_echo, mcp__aiplus__meeting_gateway, mcp__aiplus__meeting_speech, mcp__aiplus__meeting_name, mcp__aiplus__meeting_status, mcp__aiplus__meeting_doctor, mcp__aiplus__meeting_document, mcp__aiplus__meeting_help
 ---
 
 <!-- aiplus:block:start -->
-> **AI+ Meeting Assistant plugin 0.4.17** · tool contract 10. If the user asks which version you are on, answer with this line.
+> **AI+ Meeting Assistant plugin 0.4.18** · tool contract 10. If the user asks which version you are on, answer with this line.
 >
 > **Before anything else, call `meeting_status`.**
 > - **The tool does not exist** → the AI+ Meeting Assistant engine is not registered in Claude Desktop. Tell the user to run the AI+ Meeting Assistant installer, then restart Claude Desktop completely. Do not try to work without the tools. If you are a Cowork task running in the cloud rather than on the user's computer, reinstalling will not help: a cloud task cannot reach the engine on the user's computer, so say that the meeting assistant needs a task on their own computer.
@@ -90,7 +90,7 @@ Do not end your turn while the capture runs: the poll is how the meeting reaches
 - **No shell commands.** Do not run shell commands for notifications or anything else in this
   loop. If the policy asks for a desktop notification, put it on the wall's private zone instead.
 - **Status reminders.** When the host asks you to say what you are doing, answer with one line,
-  `listening — <n> polls`, and poll again.
+  `listening: <n> polls`, and poll again.
 - **Results saved to a file.** If a poll result says it was saved to a file because it was too
   large, read that file before the next poll. It is the batch.
 
@@ -144,7 +144,7 @@ refusal says. Do not stop it unless the user says so: it may be their real meeti
 
 ## 4. Stop
 
-Write the closing summary the policy asks for **first**. Then call `meeting_stop` — without
+Write the closing summary the policy asks for **first**. Then call `meeting_stop`: without
 `wall`: the wall and its console stay up, so the user can still open and save the transcript and
 the memo there. Tell the user where the transcript was saved (also as Word and PDF), and that the
 console keeps the meeting until they ask to close the wall. Only when they ask, call

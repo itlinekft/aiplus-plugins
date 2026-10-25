@@ -8,8 +8,8 @@
     {
       "name": "aiplus",
       "source": "./plugins/aiplus",
-      "version": "0.4.17",
-      "description": "Az AI+ Meeting Asszisztens skilljei az aiplus motor MCP eszközeire."
+      "version": "0.4.18",
+      "description": "AI+ Meeting Asszisztens: az élő meeting asszisztens a Claude Desktopban. A gépedre telepített AI+ motorral dolgozik, amelyet a saját telepítője tesz fel, és érvényes AI+ licenc kell hozzá. A plugin a skilleket adja: elindítja és követi a meetinget, és megnézi, hogy minden működik-e. English: AI+ Meeting Asszisztens: the live meeting assistant in Claude Desktop. It works with the AI+ engine on your computer, which its own installer puts there, and it needs a valid AI+ licence. The plugin brings the skills: it starts and follows a meeting and checks that everything works."
     },
     {
       "name": "aiplus-office",
