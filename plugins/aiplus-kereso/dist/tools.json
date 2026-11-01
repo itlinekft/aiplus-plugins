@@ -1,0 +1,110 @@
+[
+ {
+  "name": "kereso_kereses",
+  "description": "Rangsorolt keresés a cég saját irataiban (szerződések, ajánlatok, számlák, levelek, jegyzőkönyvek; PDF, Word, Excel, e-mail). Magyarul kérdezz, toldalékkal is: a ragozott szavakat a kereső a szótövükre is keresi, ékezet nélkül is talál. Minden találat a fájl útvonalával és a találó szakasszal jön. Használd ELŐSZÖR, mielőtt fájlokat nyitnál meg. Ranked search over the company's own files; Hungarian-aware.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "kifejezes": {
+     "type": "string",
+     "description": "Mit keresel, a felhasználó szavaival vagy kulcsszavakkal (partnernév, tárgy, bizonylatszám)."
+    },
+    "talalatok": {
+     "type": "integer",
+     "description": "Hány találat kell (1–30, alapból 8)."
+    },
+    "datumtol": {
+     "type": "string",
+     "description": "Csak az ezen a napon vagy később kelt iratok (ÉÉÉÉ-HH-NN)."
+    },
+    "datumig": {
+     "type": "string",
+     "description": "Csak az ezen a napon vagy korábban kelt iratok (ÉÉÉÉ-HH-NN)."
+    },
+    "mappa": {
+     "type": "string",
+     "description": "Csak ebben az almappában (a keresési mappán belüli relatív útvonal eleje, pl. „09 Levelezés”)."
+    },
+    "legujabb_elol": {
+     "type": "boolean",
+     "description": "Igaz: a legfrissebb iratok előre (pl. „mi a legutóbbi levél”, „mikor jön”)."
+    }
+   },
+   "required": [
+    "kifejezes"
+   ]
+  }
+ },
+ {
+  "name": "kereso_dokumentum",
+  "description": "Egy dokumentum szövege a keresési indexből: a rövidet egészben adja, a hosszúnál a szakaszok listáját és az elejét; a „szakasz” mezővel egy szakaszt kérhetsz (pl. „7. Felmondás”, egy munkalap sorblokkja). Így nem kell a fájlt egészben megnyitni. Read one document (whole if short, else outline or one section).",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "utvonal": {
+     "type": "string",
+     "description": "A dokumentum útvonala, ahogy a kereso_kereses adta (relatív), vagy a teljes útvonal."
+    },
+    "szakasz": {
+     "type": "string",
+     "description": "Egy szakasz címe (vagy a címe eleje); üresen az egész dokumentum vagy a vázlata."
+    }
+   },
+   "required": [
+    "utvonal"
+   ]
+  }
+ },
+ {
+  "name": "kereso_kapcsolodo",
+  "description": "A közös bizonylatszámmal összekötött iratok: egy rendelés visszaigazolása, a hozzá tartozó levelek, szállítólevél, számla — a vevő saját rendelésszáma is. Adj meg egy bizonylatszámot (pl. „RV-2026-0989”) vagy egy dokumentum útvonalát. Documents linked by a shared document number (two hops).",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "mire": {
+     "type": "string",
+     "description": "Bizonylatszám vagy dokumentum-útvonal."
+    },
+    "lepesek": {
+     "type": "integer",
+     "description": "Hány lépésben kövesse a számokat (1–3, alapból 2)."
+    }
+   },
+   "required": [
+    "mire"
+   ]
+  }
+ },
+ {
+  "name": "kereso_mappa",
+  "description": "Beállítja, melyik mappában (a cég iratainak, archívumának mappájában) keressen az AI+ Kereső, és elindítja az indexelést. Az index a gépen marad (a felhasználó AppData mappájában), a mappába nem ír. Set the folder to index (absolute path).",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "mappa": {
+     "type": "string",
+     "description": "A mappa teljes útvonala, pl. C:\\Users\\Nev\\Documents\\Archívum"
+    }
+   },
+   "required": [
+    "mappa"
+   ]
+  }
+ },
+ {
+  "name": "kereso_allapot",
+  "description": "Az AI+ Kereső állapota: a beállított mappa, az index készültsége, a legutóbbi frissítés. Status of the index.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {}
+  }
+ },
+ {
+  "name": "kereso_frissites",
+  "description": "Az index frissítése most (új, módosított, törölt fájlok). Alapból tízpercenként magától is frissül, ha használják. Refresh the index now.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {}
+  }
+ }
+]

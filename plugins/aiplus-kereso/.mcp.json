@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "aiplus-kereso": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/dist/launcher.cjs", "mcp"]
+    }
+  }
+}
