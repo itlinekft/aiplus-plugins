@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 — 2026-11-02
+
+- README and the start skill: if the search tools are still missing after one restart, restart Claude Desktop once
+  more — at launch Desktop starts the plugin's program from the copy it has, and downloads a new or newer copy a
+  second later (measured on the Windows test PC with the 0.1.1 → 0.1.2 update, 2026-11-02).
+
 ## 0.1.2 — 2026-11-02
 
 Found by the first test through Claude Desktop's plugin UI (Windows 11 test PC, 2026-11-02).

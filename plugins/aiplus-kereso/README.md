@@ -12,7 +12,9 @@ szükséges részét olvassa el, és megmondja, melyik fájlból válaszolt.
 - **Telepítés a Claude Desktopban** (Claude módban): Customize › Plugins › Add plugin › Add marketplace › Add from a
   repository › `itlinekft/aiplus-plugins` › Sync, majd az **AI+ Kereső** kártyán Add › Continue. Utána **lépj ki
   teljesen a Claude-ból** (a tálca ikonjáról is) **és indítsd újra**, majd nyiss új beszélgetést: a Claude Desktop a
-  modul programját induláskor indítja el, újraindítás nélkül a kereső eszközei nem jelennek meg. **Claude Code:**
+  modul programját induláskor indítja el, újraindítás nélkül a kereső eszközei nem jelennek meg. Ha az újraindítás
+  után sincsenek ott, indítsd újra még egyszer: a Claude Desktop az egyik induláskor tölti le a programot, és a
+  következőkor indítja el (frissítésnél is így van). **Claude Code:**
   `claude plugin marketplace add itlinekft/aiplus-plugins`, majd `claude plugin install aiplus-kereso@aiplus-plugins`.
 - **Első lépés:** kérdezd meg a Claude-tól: „Hogyan kezdjem a keresőt?” Megkérdezi, melyik mappában vannak a cég
   iratai, és elindítja az indexelést (egy 14 ezer fájlos próbaarchívumon kb. másfél perc volt, egy 6 ezer fájlos
@@ -39,7 +41,9 @@ needs, and names the file it answered from.
 - **Install in Claude Desktop** (Claude mode): Customize › Plugins › Add plugin › Add marketplace › Add from a
   repository › `itlinekft/aiplus-plugins` › Sync, then Add › Continue on the **AI+ Kereső** card. Then **quit Claude
   completely** (from the tray icon too) **and start it again**, then open a new chat: Claude Desktop starts the
-  module's program when it launches, and without a restart the search tools do not appear. **Claude Code:**
+  module's program when it launches, and without a restart the search tools do not appear. If they are still missing
+  after the restart, restart once more: Claude Desktop downloads the program during one launch and starts it at the
+  next (an update works the same way). **Claude Code:**
   `claude plugin marketplace add itlinekft/aiplus-plugins`, then `claude plugin install aiplus-kereso@aiplus-plugins`.
 - **First step:** ask Claude “How do I start the search?”. It asks for the folder that holds the company's files and
   starts indexing (about 1.5 minutes for a 14 000-file test archive; 99 s for 6 000 files on a Windows 11 test PC).

@@ -42,8 +42,10 @@ user's archive is mostly scans.
 
 - **The `kereso_*` tools are not in this session at all** (only this skill is): Claude Desktop starts the module's
   program when it launches, so right after installing it is not running yet. **HU:** „Lépj ki teljesen a Claude-ból
-  (a tálcán, az óra mellett lévő ikonjáról is: Kilépés), indítsd újra, és nyiss új beszélgetést.” **EN:** “Quit Claude
-  completely (from its tray icon too: Quit), start it again, and open a new chat.”
+  (a tálcán, az óra mellett lévő ikonjáról is: Kilépés), indítsd újra, és nyiss új beszélgetést. Ha még mindig nincs
+  meg, indítsd újra még egyszer.” **EN:** “Quit Claude completely (from its tray icon too: Quit), start it again, and
+  open a new chat. If it is still missing, restart once more.” (Desktop downloads the program during one launch and
+  starts it at the next; measured with an update, 2026-11-02.)
 
 - A tool answer says it is **downloading its runtime**: the PC's Node.js is older than 22.19, so the module fetches
   the official Node.js 24 (about 30 MB, from nodejs.org, checksum-verified) into the user's AppData once. Wait a

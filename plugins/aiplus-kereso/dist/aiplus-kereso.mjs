@@ -103771,7 +103771,7 @@ function related(folder2, of, hops = 2) {
   }
 }
 
-var VERSION = true ? "0.1.2" : "0.0.0-dev";
+var VERSION = true ? "0.1.3" : "0.0.0-dev";
 var REFRESH_EVERY_MS = 10 * 60 * 1e3;
 var log7 = createLogger("server");
 var folder = null;
