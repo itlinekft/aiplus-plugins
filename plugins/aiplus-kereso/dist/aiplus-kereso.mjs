@@ -98045,7 +98045,7 @@ fn fs_main(in : VertexOutput) -> @location(0) vec4<f32> {
             const ij = i * width + j;
             const center = buf[ij];
             let sum = 0;
-            let norm = 0;
+            let norm2 = 0;
             for (let k = 0; k < kernelSize; k++) {
               const y = i + k - halfSize;
               if (y < 0 || y >= height) {
@@ -98059,10 +98059,10 @@ fn fs_main(in : VertexOutput) -> @location(0) vec4<f32> {
                 const neighbour = buf[y * width + x];
                 const w = kernel[k * kernelSize + l] * rangeValues[Math.abs(neighbour - center)];
                 sum += neighbour * w;
-                norm += w;
+                norm2 += w;
               }
             }
-            const pix = out[ij] = Math.round(sum / norm);
+            const pix = out[ij] = Math.round(sum / norm2);
             histogram[pix]++;
           }
         }
@@ -100951,9 +100951,9 @@ function parseInlineArray(s) {
 var isIndented = (line) => /^\s/.test(line);
 var isBlank = (line) => line.trim() === "";
 function parseFrontmatter(text) {
-  const norm = text.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
-  const lines = norm.split("\n");
-  if (lines[0] !== "---") return { body: norm, fm: null, parseFailed: false };
+  const norm2 = text.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  const lines = norm2.split("\n");
+  if (lines[0] !== "---") return { body: norm2, fm: null, parseFailed: false };
   let end = -1;
   for (let i = 1; i < lines.length; i++) {
     if (lines[i] === "---") {
@@ -100961,7 +100961,7 @@ function parseFrontmatter(text) {
       break;
     }
   }
-  if (end === -1) return { body: norm, fm: null, parseFailed: false };
+  if (end === -1) return { body: norm2, fm: null, parseFailed: false };
   const fmLines = lines.slice(1, end);
   const body = lines.slice(end + 1).join("\n");
   const fm = {};
@@ -101271,8 +101271,8 @@ function safeGroups(bodyLines, lineNos) {
 }
 function chunkAsciiDoc(input) {
   const docType = input.docType ?? "doc";
-  const norm = input.text.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
-  const lines = norm.split("\n");
+  const norm2 = input.text.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  const lines = norm2.split("\n");
   const fileTitle = (input.path.split("/").pop() ?? input.path).replace(ADOC_EXT_RE, "");
   const { doctitle, attributes, bodyStart } = parseHeader(lines);
   const rootTitle = doctitle ?? fileTitle;
@@ -101386,7 +101386,7 @@ function chunkAsciiDoc(input) {
     return `${fileSha.slice(0, 8)}:${idx}`;
   }
   const frontmatter = attributes ? { ...attributes, ...doctitle ? { title: doctitle } : {} } : null;
-  return { chunks, attributes, doctitle, frontmatter, wikilinks: [], mdLinks: extractXrefs(norm), parseFailed: false };
+  return { chunks, attributes, doctitle, frontmatter, wikilinks: [], mdLinks: extractXrefs(norm2), parseFailed: false };
 }
 function realAnchors(c) {
   let first = 0;
@@ -101693,9 +101693,9 @@ CREATE TABLE IF NOT EXISTS item_rows (root TEXT, path TEXT, rid INTEGER, PRIMARY
 function buildFilterClauses(filters, outer) {
   const clauses = [];
   const args = [];
-  const norm = (v) => String(v).toLowerCase().trim();
+  const norm2 = (v) => String(v).toLowerCase().trim();
   const eqCol = (t) => t === "number" ? "value_num" : t === "date" ? "value_date" : "value";
-  const eqVal = (t, v) => t === "number" ? Number(v) : t === "date" ? String(v) : norm(v);
+  const eqVal = (t, v) => t === "number" ? Number(v) : t === "date" ? String(v) : norm2(v);
   for (const f of filters ?? []) {
     if (f.op === "eq" && f.value != null) {
       const col = eqCol(f.type);
@@ -101710,7 +101710,7 @@ function buildFilterClauses(filters, outer) {
       const col = f.type === "number" ? "value_num" : f.type === "date" ? "value_date" : "value";
       const cmp = f.op === "gte" ? ">=" : "<=";
       clauses.push(`EXISTS (SELECT 1 FROM properties p WHERE p.root=${outer}.root AND p.path=${outer}.path AND p.key=? AND p.${col} IS NOT NULL AND p.${col} ${cmp} ?)`);
-      args.push(f.key, f.type === "number" ? Number(f.value) : f.type === "date" ? String(f.value) : norm(f.value));
+      args.push(f.key, f.type === "number" ? Number(f.value) : f.type === "date" ? String(f.value) : norm2(f.value));
     }
   }
   return { clauses, args };
@@ -103621,8 +103621,11 @@ function openStore(folder2) {
   if (!store) throw new Error("M\xE9g nincs index ehhez a mapp\xE1hoz. Futtasd a friss\xEDt\xE9st (kereso_frissites), vagy v\xE1rd meg, am\xEDg elk\xE9sz\xFCl.");
   return store;
 }
+function norm(p) {
+  return p.split("\\").join("/");
+}
 function archivePath(mdRel) {
-  return mdRel.replace(/\.md$/i, "");
+  return norm(mdRel).replace(/\.md$/i, "");
 }
 var ISO = /^\d{4}-\d{2}-\d{2}$/;
 function dateOf(store, mdRel) {
@@ -103643,7 +103646,8 @@ function search(folder2, a) {
       ...searchOptsFromConfig(DEFAULTS),
       limit: a.newestFirst ? Math.min(limit * 4, 80) : limit,
       ...filters.length ? { filters } : {},
-      ...a.folderPrefix ? { pathPrefix: [a.folderPrefix.split("\\").join("/").replace(/^\/+/, "")] } : {}
+      // The engine's paths use the platform separator, so the prefix must too.
+      ...a.folderPrefix ? { pathPrefix: [norm(a.folderPrefix).replace(/^\/+/, "").split("/").join(sep4)] } : {}
     };
     const df = (t) => Number(store.read?.((db) => db.prepare("SELECT count(*) AS c FROM chunks WHERE chunks MATCH ?").get(`"${t.replace(/"/g, "")}"`))?.c ?? 0);
     const q = a.plain ? a.query : expandQuery2(a.query, df);
@@ -103741,11 +103745,11 @@ function related(folder2, of, hops = 2) {
       for (const no of numbers) {
         if (seenNo.has(no)) continue;
         seenNo.add(no);
-        const docs = store.backlinks(`tag:${no}`).filter((n) => n.type === "file" && n.path).map((n) => n.path).filter((p) => !seenDoc.has(p));
+        const docs = store.backlinks(`tag:${no}`).filter((n) => n.type === "file" && n.path).map((n) => n.path).filter((p) => !seenDoc.has(norm(p)));
         if (!docs.length) continue;
         const group = { number: no, docs: [] };
         for (const p of docs.slice(0, 25)) {
-          seenDoc.add(p);
+          seenDoc.add(norm(p));
           let md = "";
           try {
             md = readFileSync6(join6(workspaceFor(folder2).md, p), "utf8");
@@ -103767,7 +103771,7 @@ function related(folder2, of, hops = 2) {
   }
 }
 
-var VERSION = true ? "0.1.0" : "0.0.0-dev";
+var VERSION = true ? "0.1.1" : "0.0.0-dev";
 var REFRESH_EVERY_MS = 10 * 60 * 1e3;
 var log7 = createLogger("server");
 var folder = null;

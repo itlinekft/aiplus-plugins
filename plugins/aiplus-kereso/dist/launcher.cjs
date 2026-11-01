@@ -31,6 +31,8 @@ const NODE_SHA256 = {
 };
 
 const SERVER = path.join(__dirname, "aiplus-kereso.mjs");
+// How long a tool call waits for the first runtime download before the stand-in answers „try again”.
+const HOLD_MS = 50000;
 const TOOLS_JSON = path.join(__dirname, "tools.json");
 const args = process.argv.slice(2);
 
@@ -151,6 +153,9 @@ function runWithStub(installing) {
   const send = (m) => process.stdout.write(`${JSON.stringify(m)}\n`);
   const rl = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
 
+  const held = new Map();
+  const failureText = () =>
+    `Az AI+ Kereső nem tudta letölteni a futtatókörnyezetét (Node.js ${NODE_VERSION}): ${failure}. Megoldás: telepítsd a Node.js LTS-t a nodejs.org-ról (22.19 vagy újabb), majd indítsd újra a Claude-ot.`;
   const stub = (line) => {
     let req;
     try {
@@ -166,10 +171,17 @@ function runWithStub(installing) {
     } else if (req.method === "tools/list") send({ jsonrpc: "2.0", id: req.id, result: { tools } });
     else if (req.method === "ping") send({ jsonrpc: "2.0", id: req.id, result: {} });
     else if (req.method === "tools/call") {
-      const text = failure
-        ? `Az AI+ Kereső nem tudta letölteni a futtatókörnyezetét (Node.js ${NODE_VERSION}): ${failure}. Megoldás: telepítsd a Node.js LTS-t a nodejs.org-ról (22.19 vagy újabb), majd indítsd újra a Claude-ot.`
-        : `Az AI+ Kereső első indításkor letölti a futtatókörnyezetét (hivatalos Node.js ${NODE_VERSION}, kb. 30 MB, a nodejs.org-ról, ellenőrzött). Ez egy-két perc; próbáld újra egy perc múlva.`;
-      send({ jsonrpc: "2.0", id: req.id, result: { content: [{ type: "text", text }], isError: true } });
+      if (failure) {
+        send({ jsonrpc: "2.0", id: req.id, result: { content: [{ type: "text", text: failureText() }], isError: true } });
+        return;
+      }
+      // Hold the call: a first download usually finishes within the wait, and then the real server answers it
+      // (a „set the folder” call must not be lost — measured on a Windows test PC, 2026-11-01). Past the wait, say so.
+      const timer = setTimeout(() => {
+        held.delete(req.id);
+        send({ jsonrpc: "2.0", id: req.id, result: { content: [{ type: "text", text: `Az AI+ Kereső első indításkor letölti a futtatókörnyezetét (hivatalos Node.js ${NODE_VERSION}, kb. 30 MB, a nodejs.org-ról, ellenőrzött). Még tart; próbáld újra egy perc múlva.` }], isError: true } });
+      }, HOLD_MS);
+      held.set(req.id, { line, timer });
     } else if (hasId && !String(req.method).startsWith("notifications/")) send({ jsonrpc: "2.0", id: req.id, error: { code: -32601, message: `method not found: ${req.method}` } });
   };
 
@@ -195,6 +207,11 @@ function runWithStub(installing) {
         child.stdin.write(`${JSON.stringify({ ...initReq, id: swallowId })}\n`);
         child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" })}\n`);
       }
+      for (const [hid, h] of held) {
+        clearTimeout(h.timer);
+        child.stdin.write(`${h.line}\n`);
+        held.delete(hid);
+      }
       out.on("line", (l) => {
         if (swallowId && l.includes(`"${swallowId}"`)) {
           swallowId = null;
@@ -210,6 +227,11 @@ function runWithStub(installing) {
     .catch((e) => {
       failure = e.message;
       log("ERROR", `runtime install failed: ${e.stack || e}`);
+      for (const [hid, h] of held) {
+        clearTimeout(h.timer);
+        send({ jsonrpc: "2.0", id: hid, result: { content: [{ type: "text", text: failureText() }], isError: true } });
+        held.delete(hid);
+      }
     });
 }
 

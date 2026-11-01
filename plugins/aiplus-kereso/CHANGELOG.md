@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 — 2026-11-02
+
+- Launcher: a tool call made while the first-start runtime download runs (Node.js older than 22.19) is held up to
+  50 s and answered by the real server once it is ready, instead of a „try again” — so the first „set the folder”
+  call is not lost. Measured on a Windows 11 test PC with Node 22.11, 2026-11-01.
+- Windows: hit paths are shown with „/”, and the subfolder filter (`mappa`) works (the engine stores backslash
+  paths there; caught by the Windows CI run).
+
 ## 0.1.0 — 2026-11-02
 
 First release: the base plugin.
