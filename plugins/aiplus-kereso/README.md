@@ -10,14 +10,20 @@ vagy ékezet nélkül is („keretszerződésben”, „felmondasrol”), a Clau
 szükséges részét olvassa el, és megmondja, melyik fájlból válaszolt.
 
 - **Telepítés a Claude Desktopban** (Claude módban): Customize › Plugins › Add plugin › Add marketplace › Add from a
-  repository › `itlinekft/aiplus-plugins` › Sync, majd az **AI+ Kereső** kártyán Add › Continue. **Claude Code:**
+  repository › `itlinekft/aiplus-plugins` › Sync, majd az **AI+ Kereső** kártyán Add › Continue. Utána **lépj ki
+  teljesen a Claude-ból** (a tálca ikonjáról is) **és indítsd újra**, majd nyiss új beszélgetést: a Claude Desktop a
+  modul programját induláskor indítja el, újraindítás nélkül a kereső eszközei nem jelennek meg. **Claude Code:**
   `claude plugin marketplace add itlinekft/aiplus-plugins`, majd `claude plugin install aiplus-kereso@aiplus-plugins`.
 - **Első lépés:** kérdezd meg a Claude-tól: „Hogyan kezdjem a keresőt?” Megkérdezi, melyik mappában vannak a cég
-  iratai, és elindítja az indexelést (egy 14 ezer fájlos próbaarchívumon kb. másfél perc volt).
+  iratai, és elindítja az indexelést (egy 14 ezer fájlos próbaarchívumon kb. másfél perc volt, egy 6 ezer fájlos
+  Windows 11-es próbagépen 99 másodperc). Az első indexelés közben a keresés megvárja az indexet, vagy megmondja,
+  mennyi van még hátra.
 - **Mi kell hozzá?** Node.js (https://nodejs.org, „LTS”). Ha a gépen lévő 22.19-nél régebbi, a modul első indításkor
   egyszer letölti a hivatalos Node.js 24-et (kb. 30 MB, ellenőrzőösszeggel) a saját felhasználói mappádba; telepítő és
   rendszergazdai jog nem kell.
-- **Hol van az index?** A gépeden, a felhasználói adatmappában (Windowson `%LOCALAPPDATA%\aiplus-kereso`). A mappádba
+- **Hol van az index?** A gépeden, a felhasználói adatmappában: Windowson `%LOCALAPPDATA%\aiplus-kereso`, a Microsoft
+  Store-ból telepített Claude Desktopnál `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Local\aiplus-kereso`
+  (a Windows ide irányítja át az alkalmazás fájljait). A mappádba
   nem ír, szerverre nem tölt fel semmit. Amit a Claude a találatokból elolvas, azt — mint minden fájlt, amivel
   dolgozik — a Claude feldolgozza.
 - **Mit olvas?** Szöveges PDF, DOCX, XLSX (minden munkalap), EML, TXT, MD. **Még nem:** szkennelt PDF szövegréteg
@@ -31,13 +37,18 @@ Hungarian, inflected or without accents; Claude finds the right document among t
 needs, and names the file it answered from.
 
 - **Install in Claude Desktop** (Claude mode): Customize › Plugins › Add plugin › Add marketplace › Add from a
-  repository › `itlinekft/aiplus-plugins` › Sync, then Add › Continue on the **AI+ Kereső** card. **Claude Code:**
+  repository › `itlinekft/aiplus-plugins` › Sync, then Add › Continue on the **AI+ Kereső** card. Then **quit Claude
+  completely** (from the tray icon too) **and start it again**, then open a new chat: Claude Desktop starts the
+  module's program when it launches, and without a restart the search tools do not appear. **Claude Code:**
   `claude plugin marketplace add itlinekft/aiplus-plugins`, then `claude plugin install aiplus-kereso@aiplus-plugins`.
 - **First step:** ask Claude “How do I start the search?”. It asks for the folder that holds the company's files and
-  starts indexing.
+  starts indexing (about 1.5 minutes for a 14 000-file test archive; 99 s for 6 000 files on a Windows 11 test PC).
+  During the first build a search waits for the index, or says how long is left.
 - **Needs** Node.js. If the installed one is older than 22.19, the module downloads the official Node.js 24 once
   (about 30 MB, checksum-verified) into your user data folder; no installer, no administrator rights.
-- **The index** stays on your computer (on Windows `%LOCALAPPDATA%\aiplus-kereso`); it never writes into your folder
+- **The index** stays on your computer (on Windows `%LOCALAPPDATA%\aiplus-kereso`; with Claude Desktop from the
+  Microsoft Store, Windows redirects it to `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Local\aiplus-kereso`);
+  it never writes into your folder
   and uploads nothing. What Claude reads from the results is processed by Claude like any file it works with.
 - **Reads** PDF with a text layer, DOCX, XLSX, EML, TXT, MD. **Not yet:** scanned PDFs without text (OCR), old
   .doc/.xls, Outlook PST.

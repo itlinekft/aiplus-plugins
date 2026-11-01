@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.2 — 2026-11-02
+
+Found by the first test through Claude Desktop's plugin UI (Windows 11 test PC, 2026-11-02).
+
+- A search, read or link call made during a folder's **first** index build waits for the build (up to 45 s) and then
+  answers with the progress and an estimate, not with an error. Before, three error answers in the first 16 s made
+  Claude give up the tool for the whole question and open the files one by one.
+- `kereso_kapcsolodo` takes a document number with a slash (a customer's own order number such as „ABC-26/622”) as a
+  number; before, the slash made it look like a file path.
+- README and the start skill: after installing in Claude Desktop, quit Claude completely and start it again (the
+  module's program starts at launch); where the index lives with Claude Desktop from the Microsoft Store; the measured
+  Windows indexing time.
+
 ## 0.1.1 — 2026-11-02
 
 - Launcher: a tool call made while the first-start runtime download runs (Node.js older than 22.19) is held up to

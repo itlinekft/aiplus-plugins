@@ -103734,7 +103734,7 @@ function titleOf(md) {
 function related(folder2, of, hops = 2) {
   const store = openStore(folder2);
   try {
-    const isPath = /[\\/]/.test(of) || /\.(pdf|docx|xlsx|eml|txt|md)$/i.test(of);
+    const isPath = /\.(pdf|docx|xlsx|eml|txt|md)$/i.test(of.trim()) || /[\\/]/.test(of) && existsSync5(join6(workspaceFor(folder2).md, `${toArchiveRel(folder2, of)}.md`));
     let numbers = isPath ? tagsOf(readMd(folder2, toArchiveRel(folder2, of))) : [of.trim().toUpperCase()];
     const self2 = isPath ? `${toArchiveRel(folder2, of)}.md` : null;
     const seenNo = /* @__PURE__ */ new Set();
@@ -103771,17 +103771,20 @@ function related(folder2, of, hops = 2) {
   }
 }
 
-var VERSION = true ? "0.1.1" : "0.0.0-dev";
+var VERSION = true ? "0.1.2" : "0.0.0-dev";
 var REFRESH_EVERY_MS = 10 * 60 * 1e3;
 var log7 = createLogger("server");
 var folder = null;
 var progress = emptyProgress(null);
 var running = null;
 var lastRefresh = 0;
+var firstBuild = false;
+var FIRST_BUILD_WAIT_MS = Number(process.env.AIPLUS_KERESO_FIRST_WAIT_MS ?? 45e3);
 function startRefresh(reason) {
   if (!folder || running) return;
   const f = folder;
-  log7.info(`refresh requested (${reason}) folder=${f}`);
+  firstBuild = !existsSync6(workspaceFor(f).db);
+  log7.info(`refresh requested (${reason}) folder=${f} firstBuild=${firstBuild}`);
   lastRefresh = Date.now();
   progress = emptyProgress(f);
   running = refreshIndex(f, progress).catch((e) => {
@@ -103807,6 +103810,25 @@ function statusText() {
   else if (p.phase === "error") lines.push(`Hiba a legut\xF3bbi friss\xEDt\xE9skor: ${p.message}`);
   else lines.push("M\xE9g nem futott friss\xEDt\xE9s ebben a munkamenetben.");
   return lines.join("\n");
+}
+async function waitForFirstBuild() {
+  if (!running || !firstBuild) return null;
+  const build2 = running;
+  log7.info(`tool call during the first build: holding up to ${FIRST_BUILD_WAIT_MS} ms`);
+  let timer;
+  await Promise.race([build2, new Promise((r) => timer = setTimeout(r, FIRST_BUILD_WAIT_MS))]);
+  clearTimeout(timer);
+  if (!running || !firstBuild) return null;
+  const p = progress;
+  const done = p.converted + p.skipped + p.failed;
+  const elapsed = p.startedAt ? (Date.now() - Date.parse(p.startedAt)) / 1e3 : 0;
+  let eta = "";
+  if (p.phase === "indexing") eta = "A f\xE1jlok feldolgozva, most a keres\u0151 index k\xE9sz\xFCl: kb. f\xE9l perc.";
+  else if (done > 0 && p.total > done && elapsed > 0) eta = `Kb. ${Math.max(10, Math.ceil((elapsed * (p.total - done) / done + 20) / 10) * 10)} m\xE1sodperc van h\xE1tra.`;
+  return [
+    `Az index most k\xE9sz\xFCl el\u0151sz\xF6r ehhez a mapp\xE1hoz (${done} / ${p.total} f\xE1jl feldolgozva). ${eta}`.trim(),
+    "Ez nem hiba: a keres\xE9s az index elk\xE9sz\xFClte ut\xE1n m\u0171k\xF6dik. Mondd meg a felhaszn\xE1l\xF3nak, hogy az els\u0151 indexel\xE9s tart egy ideig, \xE9s pr\xF3b\xE1ld \xFAjra a keres\xE9st kicsit k\xE9s\u0151bb (a kereso_allapot mutatja, hol tart)."
+  ].join("\n");
 }
 function maybeRefresh() {
   if (folder && !running && Date.now() - lastRefresh > REFRESH_EVERY_MS) startRefresh("stale");
@@ -103842,8 +103864,10 @@ var TOOLS = [
       },
       required: ["kifejezes"]
     },
-    handler: (a) => {
+    handler: async (a) => {
       const f = requireFolder();
+      const wait = await waitForFirstBuild();
+      if (wait) return wait;
       maybeRefresh();
       return formatHits(
         search(f, { query: String(a.kifejezes ?? ""), limit: typeof a.talalatok === "number" ? a.talalatok : void 0, dateFrom: str(a.datumtol), dateTo: str(a.datumig), folderPrefix: str(a.mappa), newestFirst: a.legujabb_elol === true })
@@ -103861,7 +103885,10 @@ var TOOLS = [
       },
       required: ["utvonal"]
     },
-    handler: (a) => document2(requireFolder(), String(a.utvonal ?? ""), str(a.szakasz))
+    handler: async (a) => {
+      const f = requireFolder();
+      return await waitForFirstBuild() ?? document2(f, String(a.utvonal ?? ""), str(a.szakasz));
+    }
   },
   {
     name: "kereso_kapcsolodo",
@@ -103874,8 +103901,11 @@ var TOOLS = [
       },
       required: ["mire"]
     },
-    handler: (a) => {
-      const groups = related(requireFolder(), String(a.mire ?? ""), typeof a.lepesek === "number" ? a.lepesek : 2);
+    handler: async (a) => {
+      const f = requireFolder();
+      const wait = await waitForFirstBuild();
+      if (wait) return wait;
+      const groups = related(f, String(a.mire ?? ""), typeof a.lepesek === "number" ? a.lepesek : 2);
       if (!groups.length) return "Nincs kapcsol\xF3d\xF3 irat ezzel a sz\xE1mmal. (A bizonylatsz\xE1mokat a keres\u0151 a dokumentumok sz\xF6veg\xE9b\u0151l gy\u0171jti; pr\xF3b\xE1ld a kereso_kereses eszk\xF6zzel.)";
       return groups.map((g) => `${g.number}:
 ${g.docs.map((d) => `  - ${d.path}${d.date ? `  [${d.date}]` : ""}${d.title ? ` \u2014 ${d.title}` : ""}`).join("\n")}`).join("\n\n");
