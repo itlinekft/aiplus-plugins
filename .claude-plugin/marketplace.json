@@ -30,7 +30,7 @@
       "name": "aiplus-kereso",
       "displayName": "AI+ Kereső",
       "source": "./plugins/aiplus-kereso",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "description": "AI+ Kereső: ingyenes AI+ modul. Rangsorolt keresés a cég saját irataiban (szerződések, ajánlatok, számlák, levelek, jegyzőkönyvek; PDF, Word, Excel, e-mail) a saját Claude-odban: magyarul kérdezel, toldalékkal és ékezet nélkül is talál, és minden válasz megnevezi a fájlt. Az index a gépeden készül és ott marad (a mappádba nem ír); amit a Claude elolvas belőle, azt a Claude feldolgozza. Első lépés: „hogyan kezdjem a keresőt?”. Node.js kell hozzá; ha a gépen lévő túl régi, a modul első indításkor letölti a hivatalos Node.js-t. English: AI+ Search: free AI+ module. Ranked search over the company's own files (contracts, offers, invoices, mails, minutes; PDF, Word, Excel, e-mail) in your own Claude: ask in Hungarian, inflected or without accents, and every answer names the file. The index is built on your computer and stays there (it never writes into your folder); what Claude reads from it, Claude processes. First step: “how do I start the search?”. Needs Node.js; if the installed one is too old, the module downloads the official Node.js on first start."
     }
   ]

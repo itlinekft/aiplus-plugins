@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.4 — 2026-11-02
+
+Found in Cowork on the Windows test PC (a 14 152-file demo archive with a night task's Iratjegyzék in its root),
+reproduced and fixed here.
+
+- **Signed beats draft in the ranking too.** A draft or copy (by its file or folder name) keeps 95 % of its score, so
+  it no longer wins a tie with its signed version: the accent-free „koriskorso keretszerzodes felmondasi ideje” put the
+  draft first (−29.808 against −29.804); now the signed contract leads and the draft is second. A draft that matches
+  clearly better still leads. Nothing else in the engine's order moves.
+- **File lists.** A spreadsheet whose rows are mostly file names (an Iratjegyzék, a folder export) is marked
+  „ⓘ fájljegyzék”, gets no date (its rows' dates are not its own) and keeps half its score. It came first for
+  „Mikor szállítjuk az RV-2026-0989 rendelést?” with newest first, above the mail that answers it; now the mail leads.
+- The `kereso` skill: a file list is not a source.
+- The first refresh after the update converts every file once more (the cache format changed): a few minutes on a
+  large archive, during which the old index keeps answering.
+
 ## 0.1.3 — 2026-11-02
 
 - README and the start skill: if the search tools are still missing after one restart, restart Claude Desktop once

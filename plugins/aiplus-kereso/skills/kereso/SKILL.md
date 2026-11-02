@@ -25,6 +25,8 @@ right document first.
 
 - **Signed beats draft.** A contract in a „tervezet” / draft folder or named „tervezet”, „másolat” is not the valid
   one; prefer the signed (`aláírt`) or the filed version and say why if both exist.
+- **A file list is not a source.** A hit marked „ⓘ fájljegyzék” is a spreadsheet that lists other files (an
+  Iratjegyzék): use it to find a file's name or folder, but answer from the documents themselves.
 - **The newest mail decides „mikor jön”.** For a delivery date or a status, search with `legujabb_elol: true` (or a
   `datumtol`) and read the latest mails: an internal mail may have moved the date the confirmation promised.
   Say when the customer has not been told yet.

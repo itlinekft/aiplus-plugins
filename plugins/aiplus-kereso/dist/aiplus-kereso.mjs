@@ -103068,6 +103068,20 @@ var log2 = createLogger("convert");
 var SUPPORTED = /* @__PURE__ */ new Set([".pdf", ".docx", ".xlsx", ".eml", ".txt", ".md"]);
 var ROWS_PER_BLOCK = 20;
 var TAG_MAX = 12;
+var CONVERTER_VERSION = 2;
+var KIND_FILE_LIST = "fajljegyzek";
+var FILE_NAME_CELL = /\.(pdf|docx?|xlsx?|eml|msg|txt|md|jpe?g|png|tiff?|zip)$/i;
+function isFileList(sheets) {
+  let rows = 0;
+  let named = 0;
+  for (const sh of sheets) {
+    for (const r of sh.rows.slice(1)) {
+      rows++;
+      if (r.some((c) => FILE_NAME_CELL.test(c.trim()))) named++;
+    }
+  }
+  return rows >= 20 && named * 2 >= rows;
+}
 var DOC_NO = /\b[A-ZÁÉÍÓÖŐÚÜŰ]{1,6}[-/](?:\d{2,4}[-/])?\d{3,6}\b/g;
 var LABELLED_NO = /(?:rendel[ée]s\s*sz[áa]m(?:a|unk)?|megrendel[ée]s\s*sz[áa]ma|PO\s*sz[áa]m|hivatkoz[áa]si\s*sz[áa]m|az [öo]n[öo]k sz[áa]ma)\s*[:#]?\s*([A-Z0-9][A-Z0-9\-/]{3,20})/gi;
 function documentNumbers(text) {
@@ -103352,12 +103366,14 @@ function toMarkdown(rel, ex) {
   const tags = documentNumbers(`${relPosix}
 ${bodyText}`);
   const head = bodyText.slice(0, 4e3);
-  const date = ex.date ?? labelledDate(head) ?? findDate(relPosix, title, head);
+  const fileList = !!ex.sheets && isFileList(ex.sheets);
+  const date = fileList ? void 0 : ex.date ?? labelledDate(head) ?? findDate(relPosix, title, head);
   const kw = keywordStems(`${title}
 ${bodyText}`);
   out.push("---");
   if (tags.length && tags.length <= TAG_MAX) out.push(`tags: [${tags.map(yamlStr).join(", ")}]`);
   if (date) out.push(`date: ${date}`);
+  if (fileList) out.push(`kind: ${KIND_FILE_LIST}`);
   if (kw.length) out.push(`keywords: ${yamlStr(kw.join(" "))}`);
   out.push("---", "", `# ${relPosix}`, "", bodyText.trimEnd(), "");
   return out.join("\n");
@@ -103425,7 +103441,7 @@ var INDEX_OPTIONS = {
   indexAgentsFiles: false,
   includeSourceMarkdown: false,
   respectGitignore: false,
-  frontmatter: { searchableKeys: ["keywords"], facetKeys: [{ key: "tags" }, { key: "date", type: "date" }] }
+  frontmatter: { searchableKeys: ["keywords"], facetKeys: [{ key: "tags" }, { key: "date", type: "date" }, { key: "kind" }] }
 };
 function emptyProgress(folder2) {
   return { phase: "idle", folder: folder2, total: 0, converted: 0, skipped: 0, failed: 0, startedAt: null, finishedAt: null, message: "" };
@@ -103485,13 +103501,15 @@ async function refreshIndex(folder2, progress2) {
   const files = listArchive(folder2);
   progress2.total = files.length;
   const manifest = readManifest(ws.manifest);
+  const stale = (manifest.converter ?? 1) !== CONVERTER_VERSION;
+  if (stale && Object.keys(manifest.files).length) log4.info(`converter ${manifest.converter ?? 1} -> ${CONVERTER_VERSION}: converting every file again`);
   const live = /* @__PURE__ */ new Set();
   progress2.phase = "converting";
   let sinceSave = 0;
   for (const f of files) {
     live.add(f.rel);
     const prev = manifest.files[f.rel];
-    if (prev && prev.size === f.size && prev.mtimeMs === f.mtimeMs) {
+    if (!stale && prev && prev.size === f.size && prev.mtimeMs === f.mtimeMs) {
       progress2.skipped++;
       continue;
     }
@@ -103518,6 +103536,7 @@ async function refreshIndex(folder2, progress2) {
     delete manifest.files[rel];
     log4.info(`removed from the cache (file gone): ${rel}`);
   }
+  manifest.converter = CONVERTER_VERSION;
   writeManifest(ws.manifest, manifest);
   progress2.phase = "indexing";
   const store = new SqliteFtsStore(ws.db);
@@ -103613,6 +103632,19 @@ function serve(info3, tools) {
 
 import { existsSync as existsSync5, readFileSync as readFileSync6 } from "node:fs";
 import { isAbsolute as isAbsolute2, join as join6, relative as relative5, sep as sep4 } from "node:path";
+
+var DRAFT = /tervezet|vázlat|v[aá]zlat|m[aá]solat|draft|copy|piszkozat/i;
+var DRAFT_KEEP = 0.95;
+var FILE_LIST_KEEP = 0.5;
+function sinkDemoted(hits) {
+  const out = [...hits];
+  for (let i = out.length - 1; i >= 0; i--) {
+    if (!out[i].draft && !out[i].fileList) continue;
+    for (let j = i; j + 1 < out.length && out[j + 1].score < out[j].score; j++) [out[j], out[j + 1]] = [out[j + 1], out[j]];
+  }
+  return out;
+}
+
 var log6 = createLogger("search");
 var WHOLE_DOC_CHARS = 12e3;
 function openStore(folder2) {
@@ -103632,6 +103664,10 @@ function dateOf(store, mdRel) {
   const row = store.read?.((db) => db.prepare("SELECT value_date FROM properties WHERE root=? AND path=? AND key='date' LIMIT 1").get(SOURCE_ROOT, mdRel));
   return row?.value_date ?? null;
 }
+function kindOf(store, mdRel) {
+  const row = store.read?.((db) => db.prepare("SELECT value FROM properties WHERE root=? AND path=? AND key='kind' LIMIT 1").get(SOURCE_ROOT, mdRel));
+  return row?.value ?? null;
+}
 function cleanSnippet(s) {
   return s.replace(/\s+/g, " ").trim().slice(0, 400);
 }
@@ -103644,7 +103680,8 @@ function search(folder2, a) {
     if (a.dateTo && ISO.test(a.dateTo)) filters.push({ key: "date", op: "lte", value: a.dateTo, type: "date" });
     const opts = {
       ...searchOptsFromConfig(DEFAULTS),
-      limit: a.newestFirst ? Math.min(limit * 4, 80) : limit,
+      // Extra candidates, so a document can move up past a demoted draft or file list.
+      limit: a.newestFirst ? Math.min(limit * 4, 80) : Math.min(limit + 10, 40),
       ...filters.length ? { filters } : {},
       // The engine's paths use the platform separator, so the prefix must too.
       ...a.folderPrefix ? { pathPrefix: [norm(a.folderPrefix).replace(/^\/+/, "").split("/").join(sep4)] } : {}
@@ -103652,15 +103689,26 @@ function search(folder2, a) {
     const df = (t) => Number(store.read?.((db) => db.prepare("SELECT count(*) AS c FROM chunks WHERE chunks MATCH ?").get(`"${t.replace(/"/g, "")}"`))?.c ?? 0);
     const q = a.plain ? a.query : expandQuery2(a.query, df);
     const raw = store.search(q, opts);
-    let hits = raw.map((h) => ({
-      path: archivePath(h.path),
-      section: h.headingPath.split(" > ").slice(1).join(" \u203A ") || "(a dokumentum eleje)",
-      date: dateOf(store, h.path),
-      // A hit on the meta chunk (the Hungarian stems) has no readable snippet: say where it is instead.
-      snippet: h.chunkId.endsWith(":meta") ? "(sz\xF3t\xF6ves tal\xE1lat \u2014 a dokumentumot a kereso_dokumentum eszk\xF6zzel olvasd el)" : cleanSnippet(h.snippet),
-      moreSections: h.suppressedSections ?? 0
-    }));
-    if (a.newestFirst) hits = hits.sort((x, y) => (y.date ?? "").localeCompare(x.date ?? "")).slice(0, limit);
+    let hits = raw.map((h) => {
+      const path = archivePath(h.path);
+      const draft = DRAFT.test(path);
+      const fileList = kindOf(store, h.path) === KIND_FILE_LIST;
+      const score = h.score < 0 ? h.score * (draft ? DRAFT_KEEP : 1) * (fileList ? FILE_LIST_KEEP : 1) : h.score;
+      return {
+        path,
+        section: h.headingPath.split(" > ").slice(1).join(" \u203A ") || "(a dokumentum eleje)",
+        date: dateOf(store, h.path),
+        // A hit on the meta chunk (the Hungarian stems) has no readable snippet: say where it is instead.
+        snippet: h.chunkId.endsWith(":meta") ? "(sz\xF3t\xF6ves tal\xE1lat \u2014 a dokumentumot a kereso_dokumentum eszk\xF6zzel olvasd el)" : cleanSnippet(h.snippet),
+        moreSections: h.suppressedSections ?? 0,
+        draft,
+        fileList,
+        score
+      };
+    });
+    hits = sinkDemoted(hits);
+    if (a.newestFirst) hits.sort((x, y) => (y.date ?? "").localeCompare(x.date ?? ""));
+    hits = hits.slice(0, limit);
     log6.info(`search q=${JSON.stringify(a.query)} hits=${hits.length} filters=${filters.length} newest=${!!a.newestFirst}`);
     return hits;
   } finally {
@@ -103771,7 +103819,7 @@ function related(folder2, of, hops = 2) {
   }
 }
 
-var VERSION = true ? "0.1.3" : "0.0.0-dev";
+var VERSION = true ? "0.1.4" : "0.0.0-dev";
 var REFRESH_EVERY_MS = 10 * 60 * 1e3;
 var log7 = createLogger("server");
 var folder = null;
@@ -103838,15 +103886,15 @@ function formatHits(hits) {
   const building = running ? "\n(Megjegyz\xE9s: az index m\xE9g \xE9p\xFCl, a tal\xE1latok r\xE9szlegesek lehetnek.)" : "";
   return hits.map((h, i) => {
     const more = h.moreSections ? ` (+${h.moreSections} tov\xE1bbi tal\xE1l\xF3 szakasz ugyanebben a f\xE1jlban)` : "";
-    const draft = DRAFT.test(h.path) ? "  \u26A0 tervezet/m\xE1solat (a neve vagy a mapp\xE1ja szerint) \u2014 nem felt\xE9tlen\xFCl az \xE9rv\xE9nyes v\xE1ltozat" : "";
-    return `${i + 1}. ${h.path}${h.date ? `  [${h.date}]` : ""}${draft}
+    const draft = h.draft ? "  \u26A0 tervezet/m\xE1solat (a neve vagy a mapp\xE1ja szerint) \u2014 nem felt\xE9tlen\xFCl az \xE9rv\xE9nyes v\xE1ltozat" : "";
+    const list = h.fileList ? "  \u24D8 f\xE1jljegyz\xE9k (m\xE1s f\xE1jlok list\xE1ja) \u2014 a v\xE1laszt magukb\xF3l az iratokb\xF3l add" : "";
+    return `${i + 1}. ${h.path}${h.date ? `  [${h.date}]` : ""}${draft}${list}
    Szakasz: ${h.section}${more}
    ${h.snippet}`;
   }).join("\n\n") + `
 
 A teljes \xFAtvonal: ${folder} + a fenti relat\xEDv \xFAtvonal. Olvas\xE1shoz: kereso_dokumentum.${building}`;
 }
-var DRAFT = /tervezet|vázlat|v[aá]zlat|m[aá]solat|draft|copy|piszkozat/i;
 var str = (v) => typeof v === "string" && v.trim() ? v.trim() : void 0;
 var TOOLS = [
   {
@@ -103972,8 +104020,9 @@ async function main(argv) {
     folder = resolve3(rest[0]);
     const json = rest.includes("--json");
     const plain = rest.includes("--no-hu");
-    const words = rest.slice(1).filter((w) => w !== "--json" && w !== "--no-hu");
-    const hits = search(folder, { query: words.join(" "), limit: 10, plain });
+    const newestFirst = rest.includes("--newest");
+    const words = rest.slice(1).filter((w) => !["--json", "--no-hu", "--newest"].includes(w));
+    const hits = search(folder, { query: words.join(" "), limit: 10, plain, newestFirst });
     process.stdout.write(json ? `${JSON.stringify(hits)}
 ` : `${formatHits(hits)}
 `);
