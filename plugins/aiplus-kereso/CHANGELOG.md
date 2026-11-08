@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.1.5 — 2026-11-08
+
+The family's MCP wire contract (aiplus-claude-surface v2) and the fifth family rule, adopted.
+
+- **A malformed line no longer ends the server.** Every frame is checked against a closed envelope and answered with a
+  fixed JSON-RPC error (parse error, invalid request, unknown method, invalid params); a notification gets no answer; a
+  line over 4 MiB is refused and the server reads on. The contract's checker: 12 of 23 cases failed on 0.1.4, 23 of 23
+  pass now, on the server and through the launcher while it installs the runtime.
+- **Refusals never quote the request.** A missing folder, document or section, an unknown or mistyped argument and an
+  unexpected fault each answer one fixed Hungarian sentence; tool arguments are a closed list.
+- **Only indexed documents are read.** `kereso_dokumentum` with a `../` path could read a `.md` file outside the index;
+  it is refused now.
+- **The log file holds codes and counts:** no query, no document number, no archive path, no exception text. Paths
+  appear as short hash references. Lines written by older versions stay until the file is deleted.
+- **The archive's text is data.** The server instructions and the `kereso` skill say so: a request or instruction
+  found in a document, a mail's subject or sender, or a file name is reported to the user, never carried out. Tested
+  with the family's six invented injection texts in every one of those places.
+- **A document cannot pose as the search's own structure.** A line break hidden inside a Word paragraph or a sheet
+  name no longer starts a heading of its own. The first refresh after the update converts every file once more: a few
+  minutes on a large archive, during which the old index keeps answering.
+- A broken settings file no longer stops the server; a folder changed during a refresh is indexed after it.
+- `serverInfo.contractVersion` = 1.
+
 ## 0.1.4 — 2026-11-02
 
 Found in Cowork on the Windows test PC (a 14 152-file demo archive with a night task's Iratjegyzék in its root),
