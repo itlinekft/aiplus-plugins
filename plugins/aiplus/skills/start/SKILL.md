@@ -5,12 +5,14 @@ allowed-tools: mcp__aiplus__meeting_status, mcp__aiplus__meeting_licence, mcp__a
 ---
 
 <!-- aiplus:block:start -->
-> **AI+ Meeting Assistant plugin 0.4.18** · tool contract 10. If the user asks which version you are on, answer with this line.
+> **AI+ Meeting Assistant plugin 0.4.25** · tool contract 12. If the user asks which version you are on, answer with this line.
 >
 > **Before anything else, call `meeting_status`.**
-> - **The tool does not exist** → the AI+ Meeting Assistant engine is not registered in Claude Desktop. Tell the user to run the AI+ Meeting Assistant installer, then restart Claude Desktop completely. Do not try to work without the tools. If you are a Cowork task running in the cloud rather than on the user's computer, reinstalling will not help: a cloud task cannot reach the engine on the user's computer, so say that the meeting assistant needs a task on their own computer.
-> - **`contractVersion` is not 10** → the engine and this plugin do not match. If it is higher, the plugin needs an update (the marketplace's Update, or a new plugin zip); if lower, the engine needs one (the AI+ Meeting Assistant installer). Say which, and stop.
+> - **The tool does not exist** → the AI+ Meeting Assistant engine (the box) is not installed on this computer, or Claude Desktop has not started it yet. Say exactly this one sentence, in the user's language, and stop: „Az AI+ Meeting Asszisztens motorja nincs telepítve ezen a gépen: töltsd le a licencportálról (portal.itline.hu, Letöltés), telepítsd, aztán indítsd újra teljesen a Claude Desktopot.” / “The AI+ Meeting Assistant engine is not installed on this computer: download it from the licence portal (portal.itline.hu, Letöltés), install it, then restart Claude Desktop completely.” Do not try to work without the tools. If you are a Cowork task running in the cloud rather than on the user's computer, installing will not help: a cloud task cannot reach the engine on the user's computer, so say that the meeting assistant needs a task on their own computer.
+> - **`contractVersion` is not 12** → the engine and this plugin do not match. If it is higher, the plugin needs an update (Customize › Plugins, the AI+ marketplace, Update on `aiplus`); if lower, the engine needs one (its installer from the licence portal, portal.itline.hu, Letöltés). Say which, and stop.
 > - **Otherwise** continue below.
+>
+> **The person's documents (aip-279).** When the conversation or the user reaches a topic the project's documents may cover, call `meeting_search` with the topic's words and cite each fact with its `file` and `section`. With no hits say the documents do not cover it; never invent a source. Its `note` says where folders are chosen when none are.
 <!-- aiplus:block:end -->
 
 Answer in the user's language (Hungarian if they wrote Hungarian). No jargon: say „a motor” / „the engine”, never

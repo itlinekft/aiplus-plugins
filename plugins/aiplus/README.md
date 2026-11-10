@@ -10,8 +10,8 @@ teszi fel.
 ### Mi kell hozzá
 
 - Claude Desktop.
-- Az AI+ motor a gépeden, a saját telepítőjével. Linuxra, macOS-re és Windowsra van csomag; Windowson a felvétel még
-  fejlesztés alatt áll.
+- Az AI+ motor a gépeden, a saját telepítőjével: a licencportálról töltheted le (portal.itline.hu, Letöltés).
+  Linuxra, macOS-re és Windowsra van csomag.
 - Érvényes AI+ licenckulcs, és a beszédfelismeréshez a telepítési útmutatóban leírt beállítás.
 
 ### Telepítés
@@ -38,8 +38,8 @@ installer.
 ### What you need
 
 - Claude Desktop.
-- The AI+ engine on your computer, from its own installer. There are bundles for Linux, macOS and Windows; on
-  Windows, recording is still in development.
+- The AI+ engine on your computer, from its own installer: download it from the licence portal (portal.itline.hu,
+  Letöltés). There are bundles for Linux, macOS and Windows.
 - A valid AI+ licence key, and the speech-recognition setting described in the install guide.
 
 ### Install
