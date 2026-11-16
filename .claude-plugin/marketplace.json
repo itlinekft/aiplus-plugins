@@ -20,6 +20,7 @@
     },
     {
       "name": "aiplus-desktape",
+      "displayName": "AI+ desktape",
       "source": {
         "source": "github",
         "repo": "itlinekft/aiplus-desktape"
