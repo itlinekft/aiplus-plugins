@@ -103710,7 +103710,7 @@ function serve(info3, tools) {
       case "ping":
         return reply(f.id, {});
       case "tools/list":
-        return reply(f.id, { tools: tools.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })) });
+        return reply(f.id, { tools: tools.map(({ name, title, description, annotations, inputSchema }) => ({ name, title, description, annotations, inputSchema })) });
       case "tools/call":
         return call(f.id, f.params);
       default:
@@ -103811,7 +103811,7 @@ function search(folder2, a) {
         section: h.headingPath.split(" > ").slice(1).join(" \u203A ") || "(a dokumentum eleje)",
         date: dateOf(store, h.path),
         // A hit on the meta chunk (the Hungarian stems) has no readable snippet: say where it is instead.
-        snippet: h.chunkId.endsWith(":meta") ? "(sz\xF3t\xF6ves tal\xE1lat \u2014 a dokumentumot a kereso_dokumentum eszk\xF6zzel olvasd el)" : cleanSnippet(h.snippet),
+        snippet: h.chunkId.endsWith(":meta") ? "(sz\xF3t\xF6ves tal\xE1lat: a dokumentumot a kereso_dokumentum eszk\xF6zzel olvasd el)" : cleanSnippet(h.snippet),
         moreSections: h.suppressedSections ?? 0,
         draft,
         fileList,
@@ -103938,7 +103938,7 @@ function related(folder2, of, hops = 2) {
   }
 }
 
-var VERSION = true ? "0.1.5" : "0.0.0-dev";
+var VERSION = true ? "0.1.6" : "0.0.0-dev";
 var REFRESH_EVERY_MS = 10 * 60 * 1e3;
 var log7 = createLogger("server");
 var folder = null;
@@ -104014,8 +104014,8 @@ function formatHits(hits) {
   const building = running ? "\n(Megjegyz\xE9s: az index m\xE9g \xE9p\xFCl, a tal\xE1latok r\xE9szlegesek lehetnek.)" : "";
   return hits.map((h, i) => {
     const more = h.moreSections ? ` (+${h.moreSections} tov\xE1bbi tal\xE1l\xF3 szakasz ugyanebben a f\xE1jlban)` : "";
-    const draft = h.draft ? "  \u26A0 tervezet/m\xE1solat (a neve vagy a mapp\xE1ja szerint) \u2014 nem felt\xE9tlen\xFCl az \xE9rv\xE9nyes v\xE1ltozat" : "";
-    const list = h.fileList ? "  \u24D8 f\xE1jljegyz\xE9k (m\xE1s f\xE1jlok list\xE1ja) \u2014 a v\xE1laszt magukb\xF3l az iratokb\xF3l add" : "";
+    const draft = h.draft ? "  \u26A0 tervezet/m\xE1solat (a neve vagy a mapp\xE1ja szerint); nem felt\xE9tlen\xFCl az \xE9rv\xE9nyes v\xE1ltozat" : "";
+    const list = h.fileList ? "  \u24D8 f\xE1jljegyz\xE9k (m\xE1s f\xE1jlok list\xE1ja); a v\xE1laszt magukb\xF3l az iratokb\xF3l add" : "";
     return `${i + 1}. ${h.path}${h.date ? `  [${h.date}]` : ""}${draft}${list}
    Szakasz: ${h.section}${more}
    ${h.snippet}`;
@@ -104027,6 +104027,7 @@ var str = (v) => typeof v === "string" && v.trim() ? v.trim() : void 0;
 var TOOLS = [
   {
     name: "kereso_kereses",
+    title: "Keres\xE9s az iratokban",
     description: "Rangsorolt keres\xE9s a c\xE9g saj\xE1t irataiban (szerz\u0151d\xE9sek, aj\xE1nlatok, sz\xE1ml\xE1k, levelek, jegyz\u0151k\xF6nyvek; PDF, Word, Excel, e-mail). Magyarul k\xE9rdezz, toldal\xE9kkal is: a ragozott szavakat a keres\u0151 a sz\xF3t\xF6v\xFCkre is keresi, \xE9kezet n\xE9lk\xFCl is tal\xE1l. Minden tal\xE1lat a f\xE1jl \xFAtvonal\xE1val \xE9s a tal\xE1l\xF3 szakasszal j\xF6n. Haszn\xE1ld EL\u0150SZ\xD6R, miel\u0151tt f\xE1jlokat nyitn\xE1l meg. Ranked search over the company's own files; Hungarian-aware.",
     inputSchema: {
       type: "object",
@@ -104041,6 +104042,7 @@ var TOOLS = [
       },
       required: ["kifejezes"]
     },
+    annotations: { readOnlyHint: true },
     handler: async (a) => {
       const f = requireFolder();
       const wait = await waitForFirstBuild();
@@ -104053,6 +104055,7 @@ var TOOLS = [
   },
   {
     name: "kereso_dokumentum",
+    title: "Dokumentum olvas\xE1sa",
     description: "Egy dokumentum sz\xF6vege a keres\xE9si indexb\u0151l: a r\xF6videt eg\xE9szben adja, a hossz\xFAn\xE1l a szakaszok list\xE1j\xE1t \xE9s az elej\xE9t; a \u201Eszakasz\u201D mez\u0151vel egy szakaszt k\xE9rhetsz (pl. \u201E7. Felmond\xE1s\u201D, egy munkalap sorblokkja). \xCDgy nem kell a f\xE1jlt eg\xE9szben megnyitni. Read one document (whole if short, else outline or one section).",
     inputSchema: {
       type: "object",
@@ -104063,6 +104066,7 @@ var TOOLS = [
       },
       required: ["utvonal"]
     },
+    annotations: { readOnlyHint: true },
     handler: async (a) => {
       const f = requireFolder();
       return await waitForFirstBuild() ?? document2(f, String(a.utvonal ?? ""), str(a.szakasz));
@@ -104070,7 +104074,8 @@ var TOOLS = [
   },
   {
     name: "kereso_kapcsolodo",
-    description: "A k\xF6z\xF6s bizonylatsz\xE1mmal \xF6sszek\xF6t\xF6tt iratok: egy rendel\xE9s visszaigazol\xE1sa, a hozz\xE1 tartoz\xF3 levelek, sz\xE1ll\xEDt\xF3lev\xE9l, sz\xE1mla \u2014 a vev\u0151 saj\xE1t rendel\xE9ssz\xE1ma is. Adj meg egy bizonylatsz\xE1mot (pl. \u201ERV-2026-0989\u201D) vagy egy dokumentum \xFAtvonal\xE1t. Documents linked by a shared document number (two hops).",
+    title: "Kapcsol\xF3d\xF3 iratok",
+    description: "A k\xF6z\xF6s bizonylatsz\xE1mmal \xF6sszek\xF6t\xF6tt iratok: egy rendel\xE9s visszaigazol\xE1sa, a hozz\xE1 tartoz\xF3 levelek, sz\xE1ll\xEDt\xF3lev\xE9l, sz\xE1mla; a vev\u0151 saj\xE1t rendel\xE9ssz\xE1ma is. Adj meg egy bizonylatsz\xE1mot (pl. \u201ERV-2026-0989\u201D) vagy egy dokumentum \xFAtvonal\xE1t. Documents linked by a shared document number (two hops).",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -104080,6 +104085,7 @@ var TOOLS = [
       },
       required: ["mire"]
     },
+    annotations: { readOnlyHint: true },
     handler: async (a) => {
       const f = requireFolder();
       const wait = await waitForFirstBuild();
@@ -104087,13 +104093,15 @@ var TOOLS = [
       const groups = related(f, String(a.mire ?? ""), typeof a.lepesek === "number" ? a.lepesek : 2);
       if (!groups.length) return "Nincs kapcsol\xF3d\xF3 irat ezzel a sz\xE1mmal. (A bizonylatsz\xE1mokat a keres\u0151 a dokumentumok sz\xF6veg\xE9b\u0151l gy\u0171jti; pr\xF3b\xE1ld a kereso_kereses eszk\xF6zzel.)";
       return groups.map((g) => `${g.number}:
-${g.docs.map((d) => `  - ${d.path}${d.date ? `  [${d.date}]` : ""}${d.title ? ` \u2014 ${d.title}` : ""}`).join("\n")}`).join("\n\n");
+${g.docs.map((d) => `  - ${d.path}${d.date ? `  [${d.date}]` : ""}${d.title ? `: ${d.title}` : ""}`).join("\n")}`).join("\n\n");
     }
   },
   {
     name: "kereso_mappa",
+    title: "Keres\xE9si mappa be\xE1ll\xEDt\xE1sa",
     description: "Be\xE1ll\xEDtja, melyik mapp\xE1ban (a c\xE9g iratainak, arch\xEDvum\xE1nak mapp\xE1j\xE1ban) keressen az AI+ Keres\u0151, \xE9s elind\xEDtja az indexel\xE9st. Az index a g\xE9pen marad (a felhaszn\xE1l\xF3 AppData mapp\xE1j\xE1ban), a mapp\xE1ba nem \xEDr. Set the folder to index (absolute path).",
     inputSchema: { type: "object", additionalProperties: false, properties: { mappa: { type: "string", description: "A mappa teljes \xFAtvonala, pl. C:\\Users\\Nev\\Documents\\Arch\xEDvum" } }, required: ["mappa"] },
+    annotations: { destructiveHint: true },
     handler: (a) => {
       const dir = resolve4(String(a.mappa ?? "").trim().replace(/^["']|["']$/g, ""));
       if (!existsSync6(dir) || !statSync4(dir).isDirectory()) throw new Refusal("nincs_ilyen_mappa");
@@ -104106,15 +104114,19 @@ Az indexel\xE9s elindult a h\xE1tt\xE9rben (nagy mapp\xE1n\xE1l percekig tarthat
   },
   {
     name: "kereso_allapot",
+    title: "Keres\u0151 \xE1llapota",
     description: "Az AI+ Keres\u0151 \xE1llapota: a be\xE1ll\xEDtott mappa, az index k\xE9sz\xFClts\xE9ge, a legut\xF3bbi friss\xEDt\xE9s. Status of the index.",
     inputSchema: { type: "object", additionalProperties: false, properties: {} },
+    annotations: { readOnlyHint: true },
     handler: () => `AI+ Keres\u0151 ${VERSION}
 ${statusText()}`
   },
   {
     name: "kereso_frissites",
+    title: "Index friss\xEDt\xE9se",
     description: "Az index friss\xEDt\xE9se most (\xFAj, m\xF3dos\xEDtott, t\xF6r\xF6lt f\xE1jlok). Alapb\xF3l t\xEDzpercenk\xE9nt mag\xE1t\xF3l is friss\xFCl, ha haszn\xE1lj\xE1k. Refresh the index now.",
     inputSchema: { type: "object", additionalProperties: false, properties: {} },
+    annotations: { destructiveHint: true },
     handler: () => {
       requireFolder();
       if (running) return `M\xE1r fut egy friss\xEDt\xE9s.
@@ -104140,7 +104152,7 @@ async function main(argv) {
     return;
   }
   if (cmd === "tools-json") {
-    process.stdout.write(`${JSON.stringify(TOOLS.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })), null, 1)}
+    process.stdout.write(`${JSON.stringify(TOOLS.map(({ name, title, description, annotations, inputSchema }) => ({ name, title, description, annotations, inputSchema })), null, 1)}
 `);
     return;
   }

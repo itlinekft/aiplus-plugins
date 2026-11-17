@@ -1,7 +1,11 @@
 [
  {
   "name": "kereso_kereses",
+  "title": "Keresés az iratokban",
   "description": "Rangsorolt keresés a cég saját irataiban (szerződések, ajánlatok, számlák, levelek, jegyzőkönyvek; PDF, Word, Excel, e-mail). Magyarul kérdezz, toldalékkal is: a ragozott szavakat a kereső a szótövükre is keresi, ékezet nélkül is talál. Minden találat a fájl útvonalával és a találó szakasszal jön. Használd ELŐSZÖR, mielőtt fájlokat nyitnál meg. Ranked search over the company's own files; Hungarian-aware.",
+  "annotations": {
+   "readOnlyHint": true
+  },
   "inputSchema": {
    "type": "object",
    "additionalProperties": false,
@@ -38,7 +42,11 @@
  },
  {
   "name": "kereso_dokumentum",
+  "title": "Dokumentum olvasása",
   "description": "Egy dokumentum szövege a keresési indexből: a rövidet egészben adja, a hosszúnál a szakaszok listáját és az elejét; a „szakasz” mezővel egy szakaszt kérhetsz (pl. „7. Felmondás”, egy munkalap sorblokkja). Így nem kell a fájlt egészben megnyitni. Read one document (whole if short, else outline or one section).",
+  "annotations": {
+   "readOnlyHint": true
+  },
   "inputSchema": {
    "type": "object",
    "additionalProperties": false,
@@ -59,7 +67,11 @@
  },
  {
   "name": "kereso_kapcsolodo",
-  "description": "A közös bizonylatszámmal összekötött iratok: egy rendelés visszaigazolása, a hozzá tartozó levelek, szállítólevél, számla — a vevő saját rendelésszáma is. Adj meg egy bizonylatszámot (pl. „RV-2026-0989”) vagy egy dokumentum útvonalát. Documents linked by a shared document number (two hops).",
+  "title": "Kapcsolódó iratok",
+  "description": "A közös bizonylatszámmal összekötött iratok: egy rendelés visszaigazolása, a hozzá tartozó levelek, szállítólevél, számla; a vevő saját rendelésszáma is. Adj meg egy bizonylatszámot (pl. „RV-2026-0989”) vagy egy dokumentum útvonalát. Documents linked by a shared document number (two hops).",
+  "annotations": {
+   "readOnlyHint": true
+  },
   "inputSchema": {
    "type": "object",
    "additionalProperties": false,
@@ -80,7 +92,11 @@
  },
  {
   "name": "kereso_mappa",
+  "title": "Keresési mappa beállítása",
   "description": "Beállítja, melyik mappában (a cég iratainak, archívumának mappájában) keressen az AI+ Kereső, és elindítja az indexelést. Az index a gépen marad (a felhasználó AppData mappájában), a mappába nem ír. Set the folder to index (absolute path).",
+  "annotations": {
+   "destructiveHint": true
+  },
   "inputSchema": {
    "type": "object",
    "additionalProperties": false,
@@ -97,7 +113,11 @@
  },
  {
   "name": "kereso_allapot",
+  "title": "Kereső állapota",
   "description": "Az AI+ Kereső állapota: a beállított mappa, az index készültsége, a legutóbbi frissítés. Status of the index.",
+  "annotations": {
+   "readOnlyHint": true
+  },
   "inputSchema": {
    "type": "object",
    "additionalProperties": false,
@@ -106,7 +126,11 @@
  },
  {
   "name": "kereso_frissites",
+  "title": "Index frissítése",
   "description": "Az index frissítése most (új, módosított, törölt fájlok). Alapból tízpercenként magától is frissül, ha használják. Refresh the index now.",
+  "annotations": {
+   "destructiveHint": true
+  },
   "inputSchema": {
    "type": "object",
    "additionalProperties": false,

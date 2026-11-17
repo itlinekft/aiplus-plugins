@@ -2,7 +2,7 @@
 
 `dist/aiplus-kereso.mjs` bundles the two components below. Their licences are reproduced here as they require.
 
-## The kb search engine 0.11.0 — MIT
+## The kb search engine 0.11.0 (MIT)
 
 The search engine (SQLite FTS5 index, BM25F ranking, heading graph), used unmodified as a pinned dependency.
 
@@ -30,7 +30,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## pdfjs-dist 6.5.438 — Apache License 2.0
+## pdfjs-dist 6.5.438 (Apache License 2.0)
 
 PDF text extraction (Mozilla pdf.js). Source: https://github.com/mozilla/pdf.js. Used unmodified. The licence:
 

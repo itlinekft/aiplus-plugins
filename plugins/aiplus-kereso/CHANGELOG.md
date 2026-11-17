@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.6 — 2026-11-17
+
+Directory readiness (umbrella owner inbox #458): the Claude directory submission of this plugin, prepared.
+
+- **Every tool carries `title` and annotations**: the four read-only tools (`kereso_kereses`, `kereso_dokumentum`,
+  `kereso_kapcsolodo`, `kereso_allapot`) `readOnlyHint`, the two writers (`kereso_mappa`, `kereso_frissites`)
+  `destructiveHint`. The launcher's stand-in serves the same list while it installs the runtime.
+- **The manifest carries `repository` (the marketplace repo) and `privacyPolicyUrl`** (the AI+ privacy portal on
+  itline.hu), and the plugin folder carries a 512x512 `icon.png`.
+- **The README opens in English** (the directory has no locale field; owner inbox #458), with three example prompts
+  and a downloads/runs/sends disclosure: the plugin's only network request is the pinned Node.js v24.21.0 download
+  from nodejs.org, checked against the SHA-256 hash that ships inside the plugin. Em dashes out of the shipped texts
+  (family copy rule H2).
+- **The frame the family contract (C19) asks for:** `NOTICE`, `docs/MEASURED.md` with the test log, the tested-status
+  block in the `kereso-start` skill, `docs/user-guide.md` (staged into the plugin), OpenSpec first in `CLAUDE.md`,
+  and `npm run release:build` now validates the staged plugin (`claude plugin validate`), leak-scans it
+  (`set-leakscan --tree`) and refuses an em dash before `release/build/` is written.
+
 ## 0.1.5 — 2026-11-08
 
 The family's MCP wire contract (aiplus-claude-surface v2) and the fifth family rule, adopted.

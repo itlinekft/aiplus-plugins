@@ -19,13 +19,13 @@ company's files? Please give the full path, for example C:\Users\…\Documents\A
 with it. Indexing runs in the background: about 1.5 minutes for 14 151 test files on a Linux PC, 99 s for 6 028 on a
 Windows 11 test PC; a slower PC takes longer. During the FIRST build there is nothing to search yet: a search call waits
 up to 45 s for it, then answers with how far it is and about how long is left. That is not an error: tell the user
-the first indexing takes a while, and search again a little later — do not switch to opening files one by one.
+the first indexing takes a while, and search again a little later; do not switch to opening files one by one.
 
 ## 3. What to tell the user (the facts, in these words or close to them)
 
 - **HU:** „Az AI+ Kereső a gépeden készít keresési indexet a mappádról; a mappába nem ír, és az index nem kerül
   semmilyen szerverre. Tízpercenként magától frissül, ha használod. Amit a Claude a keresés eredményéből elolvas, azt
-  — mint minden fájlt, amivel dolgozik — a Claude feldolgozza (a Cowork és a felhős munkamenet az Anthropic szerverein
+  a Claude dolgozza fel, mint minden fájlt, amivel dolgozik (a Cowork és a felhős munkamenet az Anthropic szerverein
   fut).”
 - **EN:** “AI+ Kereső builds a search index of your folder on your computer; it never writes into the folder, and the
   index goes to no server. It refreshes itself every ten minutes while in use. What Claude reads from the results is
@@ -54,3 +54,17 @@ user's archive is mostly scans.
   majd lépj ki teljesen a Claude-ból és indítsd újra.” **EN:** “Install Node.js LTS from https://nodejs.org, then quit
   Claude completely and start it again.”
 - Refresh by hand with `kereso_frissites` after copying many new files.
+
+<!-- aiplus-kereso:tested
+The one tested-status block (C19 R8). Every line is a measured fact (dates, machines by type; ITLine keeps the
+detailed test log, it does not ship with the plugin). Nothing in the public copy may claim more than this block says.
+
+- Claude Code, Linux: tested (CI: npm test, the golden eval, the C10 wire vectors; 2026-11-01 to 11-08).
+- Claude Code, Windows: tested (the Windows CI run; 2026-11-02).
+- Claude Desktop on Windows 11: tested (install, first run, the update round and the UI round on the test PCs; 2026-11-01 to 11-08).
+- Cowork on the user's computer, Windows 11: tested (the ranking round on a Windows 11 test PC; 2026-11-02).
+- Cowork in the cloud: not tested yet (the last round ran the 0.1.2-era code).
+- macOS: not tested yet.
+- HU: Linuxen és Windows 11-en tesztelt (Claude Code, Claude Desktop, Cowork a saját gépen); a felhős Cowork és a
+  macOS egyelőre nincs tesztelve.
+-->
